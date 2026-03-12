@@ -23,9 +23,8 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".BudgetActivity"
-            android:exported="false" />
+        <activity android:name=".BudgetActivity" android:exported="false" />
+        <activity android:name=".DashboardActivity" android:exported="false" />
 
     </application>
 

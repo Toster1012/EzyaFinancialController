@@ -1,5 +1,6 @@
 package com.example.ezya;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,7 @@ public class BudgetActivity extends AppCompatActivity {
         observeCategories();
 
         binding.addCategoryButton.setOnClickListener(v -> openAddCategorySheet());
+        binding.nextButton.setOnClickListener(v -> openDashboard());
     }
 
     private void setupPeriodDropdown() {
@@ -67,6 +69,13 @@ public class BudgetActivity extends AppCompatActivity {
     private void openAddCategorySheet() {
         AddCategoryBottomSheet.newInstance(selectedPeriod, getCurrentBudget())
                 .show(getSupportFragmentManager(), "AddCategoryBottomSheet");
+    }
+
+    private void openDashboard() {
+        Intent intent = new Intent(this, DashboardActivity.class);
+        intent.putExtra("period", selectedPeriod);
+        intent.putExtra("budget", getCurrentBudget());
+        startActivity(intent);
     }
 
     @Override

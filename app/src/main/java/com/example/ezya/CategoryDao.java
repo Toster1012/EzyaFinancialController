@@ -21,4 +21,7 @@ public interface CategoryDao {
 
     @Query("SELECT SUM(amount) FROM categories WHERE period = :period")
     double getTotalAmountByPeriod(String period);
+
+    @Query("DELETE FROM categories")
+    void deleteAll();
 }
