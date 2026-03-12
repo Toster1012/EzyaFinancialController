@@ -9,10 +9,9 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
@@ -22,12 +21,24 @@
             android:textSize="32sp" />
 
         <TextView
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✕"
+            android:textColor="#555555"
+            android:textSize="16sp"
+            android:padding="4dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true" />
+
+        <TextView
             android:id="@+id/nameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:textStyle="bold"
+            android:layout_below="@id/emojiTextView"
             android:layout_marginTop="8dp" />
 
         <TextView
@@ -36,8 +47,9 @@
             android:layout_height="wrap_content"
             android:textColor="#FFDD2D"
             android:textSize="13sp"
+            android:layout_below="@id/nameTextView"
             android:layout_marginTop="4dp" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

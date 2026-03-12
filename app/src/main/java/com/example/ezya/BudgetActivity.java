@@ -5,6 +5,7 @@ import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import com.example.ezya.databinding.ActivityBudgetBinding;
+import java.util.concurrent.Executors;
 
 public class BudgetActivity extends AppCompatActivity {
 
@@ -20,7 +21,7 @@ public class BudgetActivity extends AppCompatActivity {
 
         setupPeriodDropdown();
         setupRecyclerView();
-        setupObserver();
+        observeCategories();
 
         binding.addCategoryButton.setOnClickListener(v -> openAddCategorySheet());
     }
@@ -39,12 +40,11 @@ public class BudgetActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         categoryAdapter = new CategoryAdapter();
+        categoryAdapter.setDeleteListener(category ->
+                Executors.newSingleThreadExecutor().execute(() ->
+                        AppDatabase.getInstance(this).categoryDao().delete(category)));
         binding.categoriesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         binding.categoriesRecyclerView.setAdapter(categoryAdapter);
-    }
-
-    private void setupObserver() {
-        observeCategories();
     }
 
     private void observeCategories() {
@@ -54,8 +54,18 @@ public class BudgetActivity extends AppCompatActivity {
                 .observe(this, categories -> categoryAdapter.setCategoryList(categories));
     }
 
+    private double getCurrentBudget() {
+        String budgetStr = binding.budgetEditText.getText().toString().trim();
+        if (budgetStr.isEmpty()) return 0;
+        try {
+            return Double.parseDouble(budgetStr);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     private void openAddCategorySheet() {
-        AddCategoryBottomSheet.newInstance(selectedPeriod)
+        AddCategoryBottomSheet.newInstance(selectedPeriod, getCurrentBudget())
                 .show(getSupportFragmentManager(), "AddCategoryBottomSheet");
     }
 

@@ -11,11 +11,20 @@ import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
+    public interface OnCategoryDeleteListener {
+        void onDelete(Category category);
+    }
+
     private List<Category> categoryList = new ArrayList<>();
+    private OnCategoryDeleteListener deleteListener;
 
     public void setCategoryList(List<Category> categoryList) {
         this.categoryList = categoryList;
         notifyDataSetChanged();
+    }
+
+    public void setDeleteListener(OnCategoryDeleteListener deleteListener) {
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -32,6 +41,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.emojiTextView.setText(category.getEmoji());
         holder.nameTextView.setText(category.getName());
         holder.amountTextView.setText(String.format("%.0f ₽", category.getAmount()));
+        holder.deleteButton.setOnClickListener(v -> {
+            if (deleteListener != null) {
+                deleteListener.onDelete(category);
+            }
+        });
     }
 
     @Override
@@ -43,12 +57,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         TextView emojiTextView;
         TextView nameTextView;
         TextView amountTextView;
+        TextView deleteButton;
 
         CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             emojiTextView = itemView.findViewById(R.id.emojiTextView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             amountTextView = itemView.findViewById(R.id.amountTextView);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
