@@ -1,6 +1,7 @@
 package com.example.ezya;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +10,10 @@ import com.example.ezya.databinding.ActivityBudgetBinding;
 import java.util.concurrent.Executors;
 
 public class BudgetActivity extends AppCompatActivity {
+
+    private static final String PREFS_NAME = "ezya_prefs";
+    private static final String KEY_START_TIME = "start_time";
+    private static final String KEY_PERIOD = "selected_period";
 
     private ActivityBudgetBinding binding;
     private CategoryAdapter categoryAdapter;
@@ -90,6 +95,12 @@ public class BudgetActivity extends AppCompatActivity {
                 });
             });
         } else {
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            prefs.edit()
+                    .putLong(KEY_START_TIME, System.currentTimeMillis())
+                    .putString(KEY_PERIOD, selectedPeriod)
+                    .apply();
+
             Intent intent = new Intent(this, DashboardActivity.class);
             intent.putExtra("period", selectedPeriod);
             intent.putExtra("totalIncome", totalIncome);

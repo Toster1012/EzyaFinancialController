@@ -15,8 +15,11 @@ public interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE period = :period ORDER BY timestamp DESC")
     LiveData<List<Transaction>> getTransactionsByPeriod(String period);
 
-    @Query("DELETE FROM transactions WHERE period = :period")
-    void deleteAllByPeriod(String period);
+    @Query("SELECT categoryName, categoryEmoji, SUM(amount) as amount FROM transactions WHERE period = :period AND isExpense = 1 GROUP BY categoryName, categoryEmoji")
+    LiveData<List<CategorySummary>> getExpenseSummaryByPeriod(String period);
+
+    @Query("SELECT categoryName, categoryEmoji, SUM(amount) as amount FROM transactions WHERE period = :period AND isExpense = 0 GROUP BY categoryName, categoryEmoji")
+    LiveData<List<CategorySummary>> getIncomeSummaryByPeriod(String period);
 
     @Query("DELETE FROM transactions")
     void deleteAll();
