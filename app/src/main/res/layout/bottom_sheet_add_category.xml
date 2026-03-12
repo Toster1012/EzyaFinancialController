@@ -11,9 +11,9 @@
     android:paddingBottom="40dp">
 
     <TextView
+        android:id="@+id/sheetTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Новая категория"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"

@@ -12,12 +12,14 @@ public class Category {
     private String emoji;
     private double amount;
     private String period;
+    private boolean isIncome;
 
-    public Category(String name, String emoji, double amount, String period) {
+    public Category(String name, String emoji, double amount, String period, boolean isIncome) {
         this.name = name;
         this.emoji = emoji;
         this.amount = amount;
         this.period = period;
+        this.isIncome = isIncome;
     }
 
     public int getId() { return id; }
@@ -26,4 +28,5 @@ public class Category {
     public String getEmoji() { return emoji; }
     public double getAmount() { return amount; }
     public String getPeriod() { return period; }
+    public boolean isIncome() { return isIncome; }
 }

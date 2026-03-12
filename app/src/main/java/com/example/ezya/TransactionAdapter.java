@@ -15,7 +15,8 @@ import java.util.Locale;
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder> {
 
     private List<Transaction> transactionList = new ArrayList<>();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault());
+    private final SimpleDateFormat dateFormat =
+            new SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault());
 
     public void setTransactionList(List<Transaction> transactionList) {
         this.transactionList = transactionList;
@@ -37,6 +38,14 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         holder.nameTextView.setText(transaction.getCategoryName());
         holder.dateTextView.setText(dateFormat.format(new Date(transaction.getTimestamp())));
 
+        String comment = transaction.getComment();
+        if (comment != null && !comment.isEmpty()) {
+            holder.commentTextView.setVisibility(View.VISIBLE);
+            holder.commentTextView.setText(comment);
+        } else {
+            holder.commentTextView.setVisibility(View.GONE);
+        }
+
         if (transaction.isExpense()) {
             holder.amountTextView.setText(String.format("-%.0f ₽", transaction.getAmount()));
             holder.amountTextView.setTextColor(0xFFFF5252);
@@ -56,6 +65,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         TextView nameTextView;
         TextView amountTextView;
         TextView dateTextView;
+        TextView commentTextView;
 
         TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,6 +73,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             nameTextView = itemView.findViewById(R.id.transactionNameTextView);
             amountTextView = itemView.findViewById(R.id.transactionAmountTextView);
             dateTextView = itemView.findViewById(R.id.transactionDateTextView);
+            commentTextView = itemView.findViewById(R.id.transactionCommentTextView);
         }
     }
 }

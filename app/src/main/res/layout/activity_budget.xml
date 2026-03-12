@@ -7,17 +7,41 @@
     android:background="#0A0A0A"
     android:paddingHorizontal="20dp">
 
+    <TextView
+        android:id="@+id/stepTitleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/totalIncomeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFDD2D"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginTop="6dp"
+        app:layout_constraintTop_toBottomOf="@id/stepTitleTextView"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/periodInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         app:boxStrokeColor="#2A2A2A"
         app:boxBackgroundColor="#1A1A1A"
         app:hintTextColor="#8A8A8A"
         android:hint="Период"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/totalIncomeTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -33,33 +57,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/budgetInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:boxStrokeColor="#FFDD2D"
-        app:boxBackgroundColor="#1A1A1A"
-        app:hintTextColor="#8A8A8A"
-        android:hint="Бюджет на период"
-        app:suffixText="₽"
-        app:suffixTextColor="#FFDD2D"
-        app:layout_constraintTop_toBottomOf="@id/periodInputLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/budgetEditText"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:inputType="numberDecimal"
-            android:paddingHorizontal="16dp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/addCategoryButton"
         android:layout_width="0dp"
@@ -71,8 +68,8 @@
         app:backgroundTint="#FFDD2D"
         app:cornerRadius="14dp"
         app:elevation="0dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/budgetInputLayout"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/periodInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -80,7 +77,7 @@
         android:id="@+id/categoriesRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:clipToPadding="false"
         android:paddingBottom="8dp"
         app:layout_constraintTop_toBottomOf="@id/addCategoryButton"
@@ -92,7 +89,6 @@
         android:id="@+id/nextButton"
         android:layout_width="0dp"
         android:layout_height="52dp"
-        android:text="Далее"
         android:textColor="#0A0A0A"
         android:textSize="15sp"
         android:textStyle="bold"

@@ -17,21 +17,14 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginBottom="20dp" />
-
-    <Spinner
-        android:id="@+id/categorySpinner"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:background="#1A1A1A"
-        android:popupBackground="#1A1A1A" />
+        android:layout_marginBottom="16dp" />
 
     <RadioGroup
         android:id="@+id/transactionTypeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp">
+        android:layout_marginBottom="16dp">
 
         <RadioButton
             android:id="@+id/expenseRadioButton"
@@ -54,6 +47,13 @@
 
     </RadioGroup>
 
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="#1A1A1A"
+        android:popupBackground="#1A1A1A" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/transactionAmountInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -73,6 +73,26 @@
             android:layout_height="52dp"
             android:textColor="#FFFFFF"
             android:inputType="numberDecimal" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/commentInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Комментарий (необязательно)"
+        app:boxStrokeColor="#2A2A2A"
+        app:boxBackgroundColor="#1A1A1A"
+        app:hintTextColor="#8A8A8A">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/commentEditText"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:textColor="#FFFFFF"
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

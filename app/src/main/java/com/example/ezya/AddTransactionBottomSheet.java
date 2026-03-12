@@ -18,7 +18,9 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
 
     private BottomSheetAddTransactionBinding binding;
     private String currentPeriod;
-    private List<Category> categories = new ArrayList<>();
+    private List<Category> incomeCategories = new ArrayList<>();
+    private List<Category> expenseCategories = new ArrayList<>();
+    private List<Category> currentCategories = new ArrayList<>();
 
     public static AddTransactionBottomSheet newInstance(String period) {
         AddTransactionBottomSheet sheet = new AddTransactionBottomSheet();
@@ -46,30 +48,50 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
         }
 
         loadCategories();
+
+        binding.incomeRadioButton.setOnCheckedChangeListener((btn, checked) -> {
+            if (checked) updateSpinner(true);
+        });
+        binding.expenseRadioButton.setOnCheckedChangeListener((btn, checked) -> {
+            if (checked) updateSpinner(false);
+        });
+
         binding.saveTransactionButton.setOnClickListener(v -> saveTransaction());
     }
 
     private void loadCategories() {
-        AppDatabase.getInstance(requireContext())
-                .categoryDao()
-                .getCategoriesByPeriod(currentPeriod)
-                .observe(getViewLifecycleOwner(), categoryList -> {
-                    categories = categoryList;
-                    List<String> names = new ArrayList<>();
-                    for (Category c : categoryList) {
-                        names.add(c.getEmoji() + " " + c.getName());
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            requireContext(),
-                            android.R.layout.simple_dropdown_item_1line,
-                            names);
-                    binding.categorySpinner.setAdapter(adapter);
+        AppDatabase db = AppDatabase.getInstance(requireContext());
+
+        db.categoryDao().getCategoriesByPeriodAndType(currentPeriod, true)
+                .observe(getViewLifecycleOwner(), categories -> {
+                    incomeCategories = categories;
+                    if (binding.incomeRadioButton.isChecked()) updateSpinner(true);
                 });
+
+        db.categoryDao().getCategoriesByPeriodAndType(currentPeriod, false)
+                .observe(getViewLifecycleOwner(), categories -> {
+                    expenseCategories = categories;
+                    if (binding.expenseRadioButton.isChecked()) updateSpinner(false);
+                });
+    }
+
+    private void updateSpinner(boolean isIncome) {
+        currentCategories = isIncome ? incomeCategories : expenseCategories;
+        List<String> names = new ArrayList<>();
+        for (Category c : currentCategories) {
+            names.add(c.getEmoji() + " " + c.getName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                names);
+        binding.categorySpinner.setAdapter(adapter);
     }
 
     private void saveTransaction() {
         int selectedIndex = binding.categorySpinner.getSelectedItemPosition();
         String amountStr = binding.transactionAmountEditText.getText().toString().trim();
+        String comment = binding.commentEditText.getText().toString().trim();
         boolean isExpense = binding.expenseRadioButton.isChecked();
 
         if (amountStr.isEmpty()) {
@@ -77,12 +99,12 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
             return;
         }
 
-        if (categories.isEmpty() || selectedIndex < 0) {
-            Toast.makeText(requireContext(), "Выберите категорию", Toast.LENGTH_SHORT).show();
+        if (currentCategories.isEmpty() || selectedIndex < 0) {
+            Toast.makeText(requireContext(), "Нет категорий", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Category selectedCategory = categories.get(selectedIndex);
+        Category selectedCategory = currentCategories.get(selectedIndex);
         double amount = Double.parseDouble(amountStr);
 
         Transaction transaction = new Transaction(
@@ -91,7 +113,8 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
                 amount,
                 isExpense,
                 currentPeriod,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                comment
         );
 
         Executors.newSingleThreadExecutor().execute(() -> {

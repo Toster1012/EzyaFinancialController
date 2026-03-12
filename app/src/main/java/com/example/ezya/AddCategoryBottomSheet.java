@@ -16,18 +16,21 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
     private BottomSheetAddCategoryBinding binding;
     private String selectedEmoji = "📦";
     private String currentPeriod;
-    private double totalBudget;
+    private boolean isIncome;
+    private double totalIncome;
 
     private final String[] emojiOptions = {
             "🍕", "🚗", "🏠", "👕", "💊", "📚", "✈️", "🎮", "🐾", "💪",
-            "☕", "🛒", "💄", "🎵", "🏋️", "📦", "💡", "🎁", "🍺", "🌿"
+            "☕", "🛒", "💄", "🎵", "🏋️", "📦", "💡", "🎁", "🍺", "🌿",
+            "💼", "💰", "🏦", "📈", "🎓", "🔧", "🏪", "🎪"
     };
 
-    public static AddCategoryBottomSheet newInstance(String period, double totalBudget) {
+    public static AddCategoryBottomSheet newInstance(String period, boolean isIncome, double totalIncome) {
         AddCategoryBottomSheet sheet = new AddCategoryBottomSheet();
         Bundle args = new Bundle();
         args.putString("period", period);
-        args.putDouble("totalBudget", totalBudget);
+        args.putBoolean("isIncome", isIncome);
+        args.putDouble("totalIncome", totalIncome);
         sheet.setArguments(args);
         return sheet;
     }
@@ -47,9 +50,11 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
 
         if (getArguments() != null) {
             currentPeriod = getArguments().getString("period", "Неделя");
-            totalBudget = getArguments().getDouble("totalBudget", 0);
+            isIncome = getArguments().getBoolean("isIncome", true);
+            totalIncome = getArguments().getDouble("totalIncome", 0);
         }
 
+        binding.sheetTitleTextView.setText(isIncome ? "Категория дохода" : "Категория расхода");
         buildEmojiGrid();
         binding.addCategoryButton.setOnClickListener(v -> saveCategory());
     }
@@ -79,26 +84,25 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
 
         double amount = Double.parseDouble(amountStr);
 
+        if (!isIncome && totalIncome <= 0) {
+            Toast.makeText(requireContext(), "Сначала добавьте категории дохода", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(requireContext());
-            double alreadyAllocated = db.categoryDao().getTotalAmountByPeriod(currentPeriod);
-            double remaining = totalBudget - alreadyAllocated;
+            double alreadyAllocated = db.categoryDao().getTotalExpenseByPeriod(currentPeriod);
+            double remaining = totalIncome - alreadyAllocated;
 
             requireActivity().runOnUiThread(() -> {
-                if (totalBudget <= 0) {
+                if (!isIncome && amount > remaining) {
                     Toast.makeText(requireContext(),
-                            "Сначала укажите бюджет на период", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (amount > remaining) {
-                    Toast.makeText(requireContext(),
-                            String.format("Превышение бюджета. Доступно: %.0f ₽", remaining),
+                            String.format("Превышение дохода. Доступно: %.0f ₽", remaining),
                             Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                Category category = new Category(name, selectedEmoji, amount, currentPeriod);
+                Category category = new Category(name, selectedEmoji, amount, currentPeriod, isIncome);
                 Executors.newSingleThreadExecutor().execute(() -> {
                     db.categoryDao().insert(category);
                     requireActivity().runOnUiThread(this::dismiss);

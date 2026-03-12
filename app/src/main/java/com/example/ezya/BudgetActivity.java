@@ -13,6 +13,8 @@ public class BudgetActivity extends AppCompatActivity {
     private ActivityBudgetBinding binding;
     private CategoryAdapter categoryAdapter;
     private String selectedPeriod = "Неделя";
+    private boolean isIncomeStep = true;
+    private double totalIncome = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +25,10 @@ public class BudgetActivity extends AppCompatActivity {
         setupPeriodDropdown();
         setupRecyclerView();
         observeCategories();
+        updateStepUi();
 
         binding.addCategoryButton.setOnClickListener(v -> openAddCategorySheet());
-        binding.nextButton.setOnClickListener(v -> openDashboard());
+        binding.nextButton.setOnClickListener(v -> onNextClicked());
     }
 
     private void setupPeriodDropdown() {
@@ -52,30 +55,51 @@ public class BudgetActivity extends AppCompatActivity {
     private void observeCategories() {
         AppDatabase.getInstance(this)
                 .categoryDao()
-                .getCategoriesByPeriod(selectedPeriod)
+                .getCategoriesByPeriodAndType(selectedPeriod, isIncomeStep)
                 .observe(this, categories -> categoryAdapter.setCategoryList(categories));
     }
 
-    private double getCurrentBudget() {
-        String budgetStr = binding.budgetEditText.getText().toString().trim();
-        if (budgetStr.isEmpty()) return 0;
-        try {
-            return Double.parseDouble(budgetStr);
-        } catch (NumberFormatException e) {
-            return 0;
+    private void updateStepUi() {
+        if (isIncomeStep) {
+            binding.stepTitleTextView.setText("Категории дохода");
+            binding.totalIncomeTextView.setVisibility(android.view.View.GONE);
+            binding.nextButton.setText("Далее → Расходы");
+        } else {
+            binding.stepTitleTextView.setText("Категории расходов");
+            binding.totalIncomeTextView.setVisibility(android.view.View.VISIBLE);
+            binding.totalIncomeTextView.setText(String.format("Доход: %.0f ₽", totalIncome));
+            binding.nextButton.setText("Далее →");
+        }
+    }
+
+    private void onNextClicked() {
+        if (isIncomeStep) {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                totalIncome = AppDatabase.getInstance(this)
+                        .categoryDao().getTotalIncomeByPeriod(selectedPeriod);
+                runOnUiThread(() -> {
+                    if (totalIncome <= 0) {
+                        android.widget.Toast.makeText(this,
+                                "Добавьте хотя бы одну категорию дохода",
+                                android.widget.Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    isIncomeStep = false;
+                    observeCategories();
+                    updateStepUi();
+                });
+            });
+        } else {
+            Intent intent = new Intent(this, DashboardActivity.class);
+            intent.putExtra("period", selectedPeriod);
+            intent.putExtra("totalIncome", totalIncome);
+            startActivity(intent);
         }
     }
 
     private void openAddCategorySheet() {
-        AddCategoryBottomSheet.newInstance(selectedPeriod, getCurrentBudget())
+        AddCategoryBottomSheet.newInstance(selectedPeriod, isIncomeStep, totalIncome)
                 .show(getSupportFragmentManager(), "AddCategoryBottomSheet");
-    }
-
-    private void openDashboard() {
-        Intent intent = new Intent(this, DashboardActivity.class);
-        intent.putExtra("period", selectedPeriod);
-        intent.putExtra("budget", getCurrentBudget());
-        startActivity(intent);
     }
 
     @Override

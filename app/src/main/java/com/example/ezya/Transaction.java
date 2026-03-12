@@ -14,15 +14,17 @@ public class Transaction {
     private boolean isExpense;
     private String period;
     private long timestamp;
+    private String comment;
 
     public Transaction(String categoryName, String categoryEmoji, double amount,
-                       boolean isExpense, String period, long timestamp) {
+                       boolean isExpense, String period, long timestamp, String comment) {
         this.categoryName = categoryName;
         this.categoryEmoji = categoryEmoji;
         this.amount = amount;
         this.isExpense = isExpense;
         this.period = period;
         this.timestamp = timestamp;
+        this.comment = comment;
     }
 
     public int getId() { return id; }
@@ -33,4 +35,5 @@ public class Transaction {
     public boolean isExpense() { return isExpense; }
     public String getPeriod() { return period; }
     public long getTimestamp() { return timestamp; }
+    public String getComment() { return comment; }
 }

@@ -47,6 +47,17 @@
             android:layout_marginTop="2dp" />
 
         <TextView
+            android:id="@+id/transactionCommentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#8A8A8A"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/transactionEmojiTextView"
+            android:layout_marginStart="12dp"
+            android:layout_below="@id/transactionDateTextView"
+            android:layout_marginTop="2dp" />
+
+        <TextView
             android:id="@+id/transactionAmountTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
