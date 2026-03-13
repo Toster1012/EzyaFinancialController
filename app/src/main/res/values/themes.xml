@@ -1,12 +1,23 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
     <style name="Theme.Ezya" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#FFDD2D</item>
-        <item name="colorPrimaryVariant">#0A0A0A</item>
-        <item name="colorOnPrimary">#0A0A0A</item>
-        <item name="colorSecondary">#FFDD2D</item>
-        <item name="colorSecondaryVariant">#FFDD2D</item>
-        <item name="colorOnSecondary">#0A0A0A</item>
         <item name="android:statusBarColor">#0A0A0A</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorPrimary">#FFDD2D</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="android:textColorPrimary">@color/on_background</item>
     </style>
+
+    <style name="DarkAlertDialog" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_background</item>
+        <item name="buttonBarPositiveButtonStyle">@style/YellowButton</item>
+    </style>
+
+    <style name="YellowButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">#FFDD2D</item>
+    </style>
+
 </resources>

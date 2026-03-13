@@ -4,12 +4,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import com.example.ezya.databinding.ActivityDashboardBinding;
 import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.concurrent.Executors;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends BaseActivity {
 
     private static final String PREFS_NAME = "ezya_prefs";
     private static final String KEY_START_TIME = "start_time";
@@ -37,20 +36,23 @@ public class DashboardActivity extends AppCompatActivity {
         binding.closeButton.setOnClickListener(v -> confirmDeleteAndExit());
         binding.addTransactionButton.setOnClickListener(v -> openAddTransaction());
         binding.endPeriodTestButton.setOnClickListener(v -> openPeriodSummary());
+        binding.historyButton.setOnClickListener(v ->
+                startActivity(new Intent(this, HistoryActivity.class)));
+        binding.settingsButton.setOnClickListener(v ->
+                startActivity(new Intent(this, SettingsActivity.class)));
     }
 
     private void setupViewPager() {
         DashboardPagerAdapter adapter = new DashboardPagerAdapter(this, currentPeriod);
         binding.viewPager.setAdapter(adapter);
-
         new TabLayoutMediator(binding.tabLayout, binding.viewPager,
-                (tab, position) -> tab.setText(position == 0 ? "Доходы" : "Расходы")
+                (tab, position) -> tab.setText(position == 0
+                        ? getString(R.string.income) : getString(R.string.expense))
         ).attach();
     }
 
     private void openAddTransaction() {
-        int currentTab = binding.viewPager.getCurrentItem();
-        boolean isExpense = currentTab == 1;
+        boolean isExpense = binding.viewPager.getCurrentItem() == 1;
         AddTransactionBottomSheet.newInstance(currentPeriod, isExpense)
                 .show(getSupportFragmentManager(), "AddTransaction");
     }
@@ -58,50 +60,36 @@ public class DashboardActivity extends AppCompatActivity {
     private void setupDaysRemaining() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long startTime = prefs.getLong(KEY_START_TIME, System.currentTimeMillis());
-        long now = System.currentTimeMillis();
-        long elapsedMs = now - startTime;
-
-        long periodMs;
-        switch (currentPeriod) {
-            case "Неделя": periodMs = 7L * 24 * 60 * 60 * 1000; break;
-            case "Месяц": periodMs = 30L * 24 * 60 * 60 * 1000; break;
-            case "Год": periodMs = 365L * 24 * 60 * 60 * 1000; break;
-            default: periodMs = 7L * 24 * 60 * 60 * 1000;
-        }
-
-        long remainingMs = periodMs - elapsedMs;
-        long daysRemaining = remainingMs > 0 ? remainingMs / (24 * 60 * 60 * 1000) : 0;
-        binding.daysRemainingTextView.setText(daysRemaining + " дн. осталось");
+        long remainingMs = getPeriodMs() - (System.currentTimeMillis() - startTime);
+        long days = remainingMs > 0 ? remainingMs / (24 * 60 * 60 * 1000) : 0;
+        binding.daysRemainingTextView.setText(getString(R.string.days_remaining, days));
     }
 
     private void checkPeriodExpired() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long startTime = prefs.getLong(KEY_START_TIME, System.currentTimeMillis());
-        long elapsedMs = System.currentTimeMillis() - startTime;
+        if (System.currentTimeMillis() - startTime >= getPeriodMs()) openPeriodSummary();
+    }
 
-        long periodMs;
+    private long getPeriodMs() {
         switch (currentPeriod) {
-            case "Неделя": periodMs = 7L * 24 * 60 * 60 * 1000; break;
-            case "Месяц": periodMs = 30L * 24 * 60 * 60 * 1000; break;
-            case "Год": periodMs = 365L * 24 * 60 * 60 * 1000; break;
-            default: periodMs = 7L * 24 * 60 * 60 * 1000;
+            case "Месяц": case "Month": return 30L * 24 * 60 * 60 * 1000;
+            case "Год": case "Year":   return 365L * 24 * 60 * 60 * 1000;
+            default:                   return 7L * 24 * 60 * 60 * 1000;
         }
-
-        if (elapsedMs >= periodMs) openPeriodSummary();
     }
 
     private void openPeriodSummary() {
-        Intent intent = new Intent(this, PeriodSummaryActivity.class);
-        intent.putExtra("period", currentPeriod);
-        startActivity(intent);
+        startActivity(new Intent(this, PeriodSummaryActivity.class)
+                .putExtra("period", currentPeriod));
     }
 
     private void confirmDeleteAndExit() {
         new AlertDialog.Builder(this, R.style.DarkAlertDialog)
-                .setTitle("Удалить данные?")
-                .setMessage("Все категории и транзакции будут удалены.")
-                .setPositiveButton("Да", (dialog, which) -> deleteAllAndExit())
-                .setNegativeButton("Нет", null)
+                .setTitle(R.string.delete_data_title)
+                .setMessage(R.string.delete_data_message)
+                .setPositiveButton(R.string.yes, (d, w) -> deleteAllAndExit())
+                .setNegativeButton(R.string.no, null)
                 .show();
     }
 
@@ -113,8 +101,7 @@ public class DashboardActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().apply();
                 Intent intent = new Intent(this, WelcomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
             });

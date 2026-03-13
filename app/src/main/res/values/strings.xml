@@ -1,3 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Ezya</string>
+
+    <string name="income">Доходы</string>
+    <string name="expense">Расходы</string>
+    <string name="history">История</string>
+    <string name="settings">Настройки</string>
+    <string name="days_remaining">%d дн. осталось</string>
+    <string name="add_transaction">Внести изменения</string>
+    <string name="end_period">Досрочно завершить период</string>
+
+    <string name="theme_label">Тема</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="language_label">Язык</string>
+    <string name="data_label">Данные</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="clear_history_title">Очистить историю?</string>
+    <string name="clear_history_message">Текущий период и категории останутся без изменений.</string>
+    <string name="history_cleared">История очищена</string>
+
+    <string name="delete_data_title">Удалить данные?</string>
+    <string name="delete_data_message">Все категории и транзакции будут удалены.</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

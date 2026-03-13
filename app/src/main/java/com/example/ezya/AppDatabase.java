@@ -5,22 +5,39 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Category.class, Transaction.class}, version = 3, exportSchema = false)
+@Database(
+        entities = {
+                Category.class,
+                Transaction.class,
+                PeriodRecord.class,
+                ArchivedTransaction.class
+        },
+        version = 4,
+        exportSchema = false
+)
 public abstract class AppDatabase extends RoomDatabase {
 
-    private static AppDatabase instance;
+    private static volatile AppDatabase INSTANCE;
 
     public abstract CategoryDao categoryDao();
     public abstract TransactionDao transactionDao();
+    public abstract PeriodRecordDao periodRecordDao();
+    public abstract ArchivedTransactionDao archivedTransactionDao();
 
-    public static synchronized AppDatabase getInstance(Context context) {
-        if (instance == null) {
-            instance = Room.databaseBuilder(
-                    context.getApplicationContext(),
-                    AppDatabase.class,
-                    "ezya_database"
-            ).fallbackToDestructiveMigration().build();
+    public static AppDatabase getInstance(Context context) {
+        if (INSTANCE == null) {
+            synchronized (AppDatabase.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = Room.databaseBuilder(
+                                    context.getApplicationContext(),
+                                    AppDatabase.class,
+                                    "ezya_db"
+                            )
+                            .fallbackToDestructiveMigration()
+                            .build();
+                }
+            }
         }
-        return instance;
+        return INSTANCE;
     }
 }

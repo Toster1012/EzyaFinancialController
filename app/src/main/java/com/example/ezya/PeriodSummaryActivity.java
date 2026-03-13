@@ -36,7 +36,7 @@ public class PeriodSummaryActivity extends AppCompatActivity {
         currentPeriod = getIntent().getStringExtra("period");
 
         loadSummary();
-        binding.newPeriodButton.setOnClickListener(v -> startNewPeriod());
+        binding.newPeriodButton.setOnClickListener(v -> archiveAndStartNew());
     }
 
     private void loadSummary() {
@@ -112,13 +112,41 @@ public class PeriodSummaryActivity extends AppCompatActivity {
         });
     }
 
-    private void startNewPeriod() {
+    private void archiveAndStartNew() {
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(this);
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            long startTime = prefs.getLong(KEY_START_TIME, System.currentTimeMillis());
+            long endTime = System.currentTimeMillis();
+
+            List<Transaction> transactions = db.transactionDao()
+                    .getTransactionsByPeriodSync(currentPeriod);
+
+            double totalIncome = 0, totalExpense = 0;
+            for (Transaction t : transactions) {
+                if (t.isExpense()) totalExpense += t.getAmount();
+                else totalIncome += t.getAmount();
+            }
+
+            PeriodRecord record = new PeriodRecord(
+                    currentPeriod, startTime, endTime, totalIncome, totalExpense);
+            long recordId = db.periodRecordDao().insert(record);
+
+            for (Transaction t : transactions) {
+                db.archivedTransactionDao().insert(new ArchivedTransaction(
+                        (int) recordId,
+                        t.getCategoryName(),
+                        t.getCategoryEmoji(),
+                        t.getAmount(),
+                        t.isExpense(),
+                        t.getTimestamp(),
+                        t.getComment()
+                ));
+            }
+
             db.transactionDao().deleteAll();
 
             runOnUiThread(() -> {
-                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
                 prefs.edit()
                         .putLong(KEY_START_TIME, 0)
                         .putString(KEY_PERIOD, currentPeriod)
@@ -141,11 +169,8 @@ public class PeriodSummaryActivity extends AppCompatActivity {
     }
 
     static class CategoryResultItem {
-        String emoji;
-        String name;
-        double planned;
-        double actual;
-        double diff;
+        String emoji, name;
+        double planned, actual, diff;
 
         CategoryResultItem(String emoji, String name,
                            double planned, double actual, double diff) {
@@ -162,9 +187,7 @@ public class PeriodSummaryActivity extends AppCompatActivity {
 
         private final List<CategoryResultItem> items;
 
-        CategoryResultAdapter(List<CategoryResultItem> items) {
-            this.items = items;
-        }
+        CategoryResultAdapter(List<CategoryResultItem> items) { this.items = items; }
 
         @NonNull
         @Override
@@ -181,14 +204,11 @@ public class PeriodSummaryActivity extends AppCompatActivity {
             holder.nameTextView.setText(item.name);
             holder.plannedTextView.setText(String.format("План: %.0f ₽", item.planned));
             holder.actualTextView.setText(String.format("Доход: %.0f ₽", item.actual));
-
             if (item.diff >= 0) {
-                holder.diffTextView.setText(
-                        String.format("Сэкономлено: %.0f ₽", item.diff));
+                holder.diffTextView.setText(String.format("Сэкономлено: %.0f ₽", item.diff));
                 holder.diffTextView.setTextColor(0xFF4CAF50);
             } else {
-                holder.diffTextView.setText(
-                        String.format("Перерасход: %.0f ₽", Math.abs(item.diff)));
+                holder.diffTextView.setText(String.format("Перерасход: %.0f ₽", Math.abs(item.diff)));
                 holder.diffTextView.setTextColor(0xFFFF5252);
             }
         }
@@ -197,11 +217,8 @@ public class PeriodSummaryActivity extends AppCompatActivity {
         public int getItemCount() { return items.size(); }
 
         static class ResultViewHolder extends RecyclerView.ViewHolder {
-            TextView emojiTextView;
-            TextView nameTextView;
-            TextView plannedTextView;
-            TextView actualTextView;
-            TextView diffTextView;
+            TextView emojiTextView, nameTextView, plannedTextView,
+                    actualTextView, diffTextView;
 
             ResultViewHolder(@NonNull View itemView) {
                 super(itemView);
