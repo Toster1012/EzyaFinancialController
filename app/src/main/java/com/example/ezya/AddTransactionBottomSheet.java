@@ -18,14 +18,15 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
 
     private BottomSheetAddTransactionBinding binding;
     private String currentPeriod;
+    private boolean forceExpense;
     private List<Category> incomeCategories = new ArrayList<>();
     private List<Category> expenseCategories = new ArrayList<>();
-    private List<Category> currentCategories = new ArrayList<>();
 
-    public static AddTransactionBottomSheet newInstance(String period) {
+    public static AddTransactionBottomSheet newInstance(String period, boolean isExpense) {
         AddTransactionBottomSheet sheet = new AddTransactionBottomSheet();
         Bundle args = new Bundle();
         args.putString("period", period);
+        args.putBoolean("forceExpense", isExpense);
         sheet.setArguments(args);
         return sheet;
     }
@@ -45,40 +46,44 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
 
         if (getArguments() != null) {
             currentPeriod = getArguments().getString("period", "Неделя");
+            forceExpense = getArguments().getBoolean("forceExpense", false);
         }
 
-        loadCategories();
+        if (forceExpense) {
+            binding.expenseRadioButton.setChecked(true);
+            binding.incomeRadioButton.setEnabled(false);
+        } else {
+            binding.incomeRadioButton.setChecked(true);
+            binding.expenseRadioButton.setEnabled(false);
+        }
 
-        binding.incomeRadioButton.setOnCheckedChangeListener((btn, checked) -> {
-            if (checked) updateSpinner(true);
-        });
-        binding.expenseRadioButton.setOnCheckedChangeListener((btn, checked) -> {
-            if (checked) updateSpinner(false);
-        });
-
-        binding.saveTransactionButton.setOnClickListener(v -> saveTransaction());
-    }
-
-    private void loadCategories() {
         AppDatabase db = AppDatabase.getInstance(requireContext());
-
-        db.categoryDao().getCategoriesByPeriodAndType(currentPeriod, true)
-                .observe(getViewLifecycleOwner(), categories -> {
-                    incomeCategories = categories;
-                    if (binding.incomeRadioButton.isChecked()) updateSpinner(true);
-                });
 
         db.categoryDao().getCategoriesByPeriodAndType(currentPeriod, false)
                 .observe(getViewLifecycleOwner(), categories -> {
                     expenseCategories = categories;
-                    if (binding.expenseRadioButton.isChecked()) updateSpinner(false);
+                    if (binding.expenseRadioButton.isChecked()) {
+                        refreshSpinner(expenseCategories);
+                    }
                 });
+
+        db.categoryDao().getCategoriesByPeriodAndType(currentPeriod, true)
+                .observe(getViewLifecycleOwner(), categories -> {
+                    incomeCategories = categories;
+                    if (binding.incomeRadioButton.isChecked()) {
+                        refreshSpinner(incomeCategories);
+                    }
+                });
+
+        binding.expenseRadioButton.setOnClickListener(v -> refreshSpinner(expenseCategories));
+        binding.incomeRadioButton.setOnClickListener(v -> refreshSpinner(incomeCategories));
+
+        binding.saveTransactionButton.setOnClickListener(v -> saveTransaction());
     }
 
-    private void updateSpinner(boolean isIncome) {
-        currentCategories = isIncome ? incomeCategories : expenseCategories;
+    private void refreshSpinner(List<Category> categories) {
         List<String> names = new ArrayList<>();
-        for (Category c : currentCategories) {
+        for (Category c : categories) {
             names.add(c.getEmoji() + " " + c.getName());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -93,6 +98,8 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
         String amountStr = binding.transactionAmountEditText.getText().toString().trim();
         String comment = binding.commentEditText.getText().toString().trim();
         boolean isExpense = binding.expenseRadioButton.isChecked();
+
+        List<Category> currentCategories = isExpense ? expenseCategories : incomeCategories;
 
         if (amountStr.isEmpty()) {
             Toast.makeText(requireContext(), "Введите сумму", Toast.LENGTH_SHORT).show();

@@ -1,19 +1,17 @@
 package com.example.ezya;
 
-import androidx.room.ColumnInfo;
-
 public class CategorySummary {
 
-    @ColumnInfo(name = "categoryName")
-    public String categoryName;
+    private String categoryName;
+    private String categoryEmoji;
+    private double amount;
 
-    @ColumnInfo(name = "categoryEmoji")
-    public String categoryEmoji;
+    public String getCategoryName() { return categoryName; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 
-    @ColumnInfo(name = "amount")
-    public double amount;
+    public String getCategoryEmoji() { return categoryEmoji; }
+    public void setCategoryEmoji(String categoryEmoji) { this.categoryEmoji = categoryEmoji; }
 
-    public String getName() { return categoryName; }
-    public String getEmoji() { return categoryEmoji; }
     public double getAmount() { return amount; }
+    public void setAmount(double amount) { this.amount = amount; }
 }

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="#1A1A1A"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/resultEmojiTextView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textSize="22sp"
+            android:gravity="center"
+            android:background="#2A2A2A"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/resultNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_toEndOf="@id/resultEmojiTextView"
+            android:layout_marginStart="12dp"
+            android:layout_alignTop="@id/resultEmojiTextView" />
+
+        <TextView
+            android:id="@+id/resultPlannedTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#8A8A8A"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/resultEmojiTextView"
+            android:layout_marginStart="12dp"
+            android:layout_below="@id/resultNameTextView"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/resultActualTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#8A8A8A"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/resultEmojiTextView"
+            android:layout_marginStart="12dp"
+            android:layout_below="@id/resultPlannedTextView"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/resultDiffTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

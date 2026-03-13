@@ -1,156 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0A0A0A">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/daysRemainingTextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="20dp"
-        android:paddingBottom="40dp">
+        android:textColor="#FFDD2D"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/daysRemainingTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFDD2D"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <TextView
+        android:id="@+id/closeButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="✕"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/closeButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:text="✕"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="20dp"
+        android:background="#1A1A1A"
+        app:tabSelectedTextColor="#FFDD2D"
+        app:tabTextColor="#8A8A8A"
+        app:tabIndicatorColor="#FFDD2D"
+        app:tabRippleColor="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/daysRemainingTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/totalIncomeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#4CAF50"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:layout_marginTop="56dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintBottom_toTopOf="@id/addTransactionButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/totalExpenseTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FF5252"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:layout_marginTop="56dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addTransactionButton"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:text="Внести изменения"
+        android:textColor="#0A0A0A"
+        android:textStyle="bold"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="8dp"
+        app:backgroundTint="#FFDD2D"
+        app:cornerRadius="14dp"
+        app:elevation="0dp"
+        app:layout_constraintBottom_toTopOf="@id/endPeriodTestButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/incomeLabelTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Доходы"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/totalIncomeTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/expenseLabelTextView" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/endPeriodTestButton"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:text="Досрочно завершить период"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp"
+        app:backgroundTint="#2A2A2A"
+        app:cornerRadius="14dp"
+        app:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/expenseLabelTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Расходы"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/totalExpenseTextView"
-            app:layout_constraintStart_toEndOf="@id/incomeLabelTextView"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <com.example.ezya.PieChartView
-            android:id="@+id/incomeChartView"
-            android:layout_width="0dp"
-            android:layout_height="160dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/incomeLabelTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/expenseChartView" />
-
-        <com.example.ezya.PieChartView
-            android:id="@+id/expenseChartView"
-            android:layout_width="0dp"
-            android:layout_height="160dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/expenseLabelTextView"
-            app:layout_constraintStart_toEndOf="@id/incomeChartView"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/selectedCategoryTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/incomeChartView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/addTransactionButton"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:text="Внести изменения"
-            android:textColor="#0A0A0A"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"
-            app:backgroundTint="#FFDD2D"
-            app:cornerRadius="14dp"
-            app:elevation="0dp"
-            app:layout_constraintTop_toBottomOf="@id/selectedCategoryTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/historyTitleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="История"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/addTransactionButton"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/transactionsRecyclerView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/historyTitleTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,12 +23,23 @@
         android:id="@+id/totalIncomeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FFDD2D"
+        android:textColor="#4CAF50"
         android:textSize="15sp"
         android:textStyle="bold"
         android:visibility="gone"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/stepTitleTextView"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/remainingBudgetTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFDD2D"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/totalIncomeTextView"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -41,7 +52,7 @@
         app:boxBackgroundColor="#1A1A1A"
         app:hintTextColor="#8A8A8A"
         android:hint="Период"
-        app:layout_constraintTop_toBottomOf="@id/totalIncomeTextView"
+        app:layout_constraintTop_toBottomOf="@id/remainingBudgetTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 

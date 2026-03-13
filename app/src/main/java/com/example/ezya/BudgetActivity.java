@@ -3,10 +3,13 @@ package com.example.ezya;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.GridLayoutManager;
 import com.example.ezya.databinding.ActivityBudgetBinding;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 public class BudgetActivity extends AppCompatActivity {
@@ -20,6 +23,8 @@ public class BudgetActivity extends AppCompatActivity {
     private String selectedPeriod = "Неделя";
     private boolean isIncomeStep = true;
     private double totalIncome = 0;
+    private boolean isNewPeriod = false;
+    private LiveData<List<Category>> activeLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +32,36 @@ public class BudgetActivity extends AppCompatActivity {
         binding = ActivityBudgetBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        isNewPeriod = getIntent().getBooleanExtra("isNewPeriod", false);
+        if (isNewPeriod) {
+            String savedPeriod = getIntent().getStringExtra("period");
+            if (savedPeriod != null) selectedPeriod = savedPeriod;
+        }
+
         setupPeriodDropdown();
         setupRecyclerView();
-        observeCategories();
-        updateStepUi();
+
+        if (isNewPeriod) {
+            loadTotalIncomeAndProceed();
+        } else {
+            observeCategories();
+            updateStepUi();
+        }
 
         binding.addCategoryButton.setOnClickListener(v -> openAddCategorySheet());
         binding.nextButton.setOnClickListener(v -> onNextClicked());
+    }
+
+    private void loadTotalIncomeAndProceed() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            totalIncome = AppDatabase.getInstance(this)
+                    .categoryDao().getTotalIncomeByPeriod(selectedPeriod);
+            runOnUiThread(() -> {
+                isIncomeStep = true;
+                observeCategories();
+                updateStepUi();
+            });
+        });
     }
 
     private void setupPeriodDropdown() {
@@ -51,28 +79,68 @@ public class BudgetActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         categoryAdapter = new CategoryAdapter();
         categoryAdapter.setDeleteListener(category ->
-                Executors.newSingleThreadExecutor().execute(() ->
-                        AppDatabase.getInstance(this).categoryDao().delete(category)));
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    AppDatabase.getInstance(this).categoryDao().delete(category);
+                    if (!isIncomeStep) updateRemainingBudget();
+                }));
+        categoryAdapter.setEditListener(category ->
+                AddCategoryBottomSheet.newInstanceEdit(category, selectedPeriod, totalIncome)
+                        .show(getSupportFragmentManager(), "EditCategory"));
         binding.categoriesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         binding.categoriesRecyclerView.setAdapter(categoryAdapter);
     }
 
     private void observeCategories() {
-        AppDatabase.getInstance(this)
+        if (activeLiveData != null) {
+            activeLiveData.removeObservers(this);
+        }
+
+        activeLiveData = AppDatabase.getInstance(this)
                 .categoryDao()
-                .getCategoriesByPeriodAndType(selectedPeriod, isIncomeStep)
-                .observe(this, categories -> categoryAdapter.setCategoryList(categories));
+                .getCategoriesByPeriodAndType(selectedPeriod, isIncomeStep);
+
+        activeLiveData.observe(this, categories -> {
+            categoryAdapter.setCategoryList(categories);
+            if (!isIncomeStep) {
+                double totalExpense = 0;
+                for (Category c : categories) totalExpense += c.getAmount();
+                updateRemainingText(totalIncome - totalExpense);
+            }
+        });
+    }
+
+    private void updateRemainingBudget() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            double totalExpense = AppDatabase.getInstance(this)
+                    .categoryDao().getTotalExpenseByPeriod(selectedPeriod);
+            runOnUiThread(() -> updateRemainingText(totalIncome - totalExpense));
+        });
+    }
+
+    private void updateRemainingText(double remaining) {
+        if (remaining >= 0) {
+            binding.remainingBudgetTextView.setText(
+                    String.format("Остаток: %.0f ₽", remaining));
+            binding.remainingBudgetTextView.setTextColor(0xFFFFDD2D);
+        } else {
+            binding.remainingBudgetTextView.setText(
+                    String.format("Превышение: %.0f ₽", Math.abs(remaining)));
+            binding.remainingBudgetTextView.setTextColor(0xFFFF5252);
+        }
     }
 
     private void updateStepUi() {
         if (isIncomeStep) {
             binding.stepTitleTextView.setText("Категории дохода");
-            binding.totalIncomeTextView.setVisibility(android.view.View.GONE);
+            binding.totalIncomeTextView.setVisibility(View.GONE);
+            binding.remainingBudgetTextView.setVisibility(View.GONE);
             binding.nextButton.setText("Далее → Расходы");
         } else {
             binding.stepTitleTextView.setText("Категории расходов");
-            binding.totalIncomeTextView.setVisibility(android.view.View.VISIBLE);
-            binding.totalIncomeTextView.setText(String.format("Доход: %.0f ₽", totalIncome));
+            binding.totalIncomeTextView.setVisibility(View.VISIBLE);
+            binding.totalIncomeTextView.setText(
+                    String.format("Доход: %.0f ₽", totalIncome));
+            binding.remainingBudgetTextView.setVisibility(View.VISIBLE);
             binding.nextButton.setText("Далее →");
         }
     }
@@ -105,6 +173,7 @@ public class BudgetActivity extends AppCompatActivity {
             intent.putExtra("period", selectedPeriod);
             intent.putExtra("totalIncome", totalIncome);
             startActivity(intent);
+            finish();
         }
     }
 

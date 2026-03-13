@@ -18,6 +18,7 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
     private String currentPeriod;
     private boolean isIncome;
     private double totalIncome;
+    private Category editingCategory;
 
     private final String[] emojiOptions = {
             "🍕", "🚗", "🏠", "👕", "💊", "📚", "✈️", "🎮", "🐾", "💪",
@@ -25,12 +26,28 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
             "💼", "💰", "🏦", "📈", "🎓", "🔧", "🏪", "🎪"
     };
 
-    public static AddCategoryBottomSheet newInstance(String period, boolean isIncome, double totalIncome) {
+    public static AddCategoryBottomSheet newInstance(String period, boolean isIncome,
+                                                     double totalIncome) {
         AddCategoryBottomSheet sheet = new AddCategoryBottomSheet();
         Bundle args = new Bundle();
         args.putString("period", period);
         args.putBoolean("isIncome", isIncome);
         args.putDouble("totalIncome", totalIncome);
+        sheet.setArguments(args);
+        return sheet;
+    }
+
+    public static AddCategoryBottomSheet newInstanceEdit(Category category,
+                                                         String period, double totalIncome) {
+        AddCategoryBottomSheet sheet = new AddCategoryBottomSheet();
+        Bundle args = new Bundle();
+        args.putString("period", period);
+        args.putBoolean("isIncome", category.isIncome());
+        args.putDouble("totalIncome", totalIncome);
+        args.putInt("editId", category.getId());
+        args.putString("editName", category.getName());
+        args.putString("editEmoji", category.getEmoji());
+        args.putDouble("editAmount", category.getAmount());
         sheet.setArguments(args);
         return sheet;
     }
@@ -52,9 +69,32 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
             currentPeriod = getArguments().getString("period", "Неделя");
             isIncome = getArguments().getBoolean("isIncome", true);
             totalIncome = getArguments().getDouble("totalIncome", 0);
+
+            int editId = getArguments().getInt("editId", -1);
+            if (editId != -1) {
+                editingCategory = new Category(
+                        getArguments().getString("editName"),
+                        getArguments().getString("editEmoji"),
+                        getArguments().getDouble("editAmount"),
+                        currentPeriod,
+                        isIncome
+                );
+                editingCategory.setId(editId);
+
+                selectedEmoji = editingCategory.getEmoji();
+                binding.categoryNameEditText.setText(editingCategory.getName());
+                binding.categoryAmountEditText.setText(
+                        String.valueOf((int) editingCategory.getAmount()));
+                binding.selectedEmojiTextView.setText(selectedEmoji);
+                binding.sheetTitleTextView.setText(isIncome
+                        ? "Редактировать доход" : "Редактировать расход");
+                binding.addCategoryButton.setText("Сохранить");
+            } else {
+                binding.sheetTitleTextView.setText(isIncome
+                        ? "Категория дохода" : "Категория расхода");
+            }
         }
 
-        binding.sheetTitleTextView.setText(isIncome ? "Категория дохода" : "Категория расхода");
         buildEmojiGrid();
         binding.addCategoryButton.setOnClickListener(v -> saveCategory());
     }
@@ -85,13 +125,20 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
         double amount = Double.parseDouble(amountStr);
 
         if (!isIncome && totalIncome <= 0) {
-            Toast.makeText(requireContext(), "Сначала добавьте категории дохода", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(),
+                    "Сначала добавьте категории дохода", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Executors.newSingleThreadExecutor().execute(() -> {
             AppDatabase db = AppDatabase.getInstance(requireContext());
-            double alreadyAllocated = db.categoryDao().getTotalExpenseByPeriod(currentPeriod);
+            double alreadyAllocated = db.categoryDao()
+                    .getTotalExpenseByPeriod(currentPeriod);
+
+            if (editingCategory != null) {
+                alreadyAllocated -= editingCategory.getAmount();
+            }
+
             double remaining = totalIncome - alreadyAllocated;
 
             requireActivity().runOnUiThread(() -> {
@@ -102,9 +149,17 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
                     return;
                 }
 
-                Category category = new Category(name, selectedEmoji, amount, currentPeriod, isIncome);
                 Executors.newSingleThreadExecutor().execute(() -> {
-                    db.categoryDao().insert(category);
+                    if (editingCategory != null) {
+                        editingCategory.setName(name);
+                        editingCategory.setEmoji(selectedEmoji);
+                        editingCategory.setAmount(amount);
+                        db.categoryDao().update(editingCategory);
+                    } else {
+                        db.categoryDao().insert(
+                                new Category(name, selectedEmoji, amount,
+                                        currentPeriod, isIncome));
+                    }
                     requireActivity().runOnUiThread(this::dismiss);
                 });
             });

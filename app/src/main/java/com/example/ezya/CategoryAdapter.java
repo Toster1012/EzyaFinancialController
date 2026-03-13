@@ -15,8 +15,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         void onDelete(Category category);
     }
 
+    public interface OnCategoryEditListener {
+        void onEdit(Category category);
+    }
+
     private List<Category> categoryList = new ArrayList<>();
     private OnCategoryDeleteListener deleteListener;
+    private OnCategoryEditListener editListener;
 
     public void setCategoryList(List<Category> categoryList) {
         this.categoryList = categoryList;
@@ -25,6 +30,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     public void setDeleteListener(OnCategoryDeleteListener deleteListener) {
         this.deleteListener = deleteListener;
+    }
+
+    public void setEditListener(OnCategoryEditListener editListener) {
+        this.editListener = editListener;
     }
 
     @NonNull
@@ -41,17 +50,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.emojiTextView.setText(category.getEmoji());
         holder.nameTextView.setText(category.getName());
         holder.amountTextView.setText(String.format("%.0f ₽", category.getAmount()));
+
         holder.deleteButton.setOnClickListener(v -> {
-            if (deleteListener != null) {
-                deleteListener.onDelete(category);
-            }
+            if (deleteListener != null) deleteListener.onDelete(category);
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            if (editListener != null) editListener.onEdit(category);
         });
     }
 
     @Override
-    public int getItemCount() {
-        return categoryList.size();
-    }
+    public int getItemCount() { return categoryList.size(); }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView emojiTextView;
