@@ -9,6 +9,7 @@
         <item name="colorSurface">@color/surface</item>
         <item name="android:textColorPrimary">@color/on_background</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetTheme</item>
     </style>
 
     <style name="DarkAlertDialog" parent="Theme.MaterialComponents.Dialog.Alert">

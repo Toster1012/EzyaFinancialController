@@ -5,5 +5,7 @@
     <color name="on_background">#FFFFFF</color>
     <color name="text_secondary">#8A8A8A</color>
     <color name="status_bar">#0A0A0A</color>
+    <color name="lang_active">#FFDD2D</color>
+    <color name="lang_inactive">#8A8A8A</color>
     <bool name="is_light_theme">false</bool>
 </resources>

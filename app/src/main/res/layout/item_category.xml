@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
+    android:layout_margin="4dp"
     app:cardBackgroundColor="@color/surface"
     app:cardCornerRadius="14dp"
     app:cardElevation="0dp">
@@ -21,8 +21,8 @@
             android:textSize="22sp"
             android:gravity="center"
             android:background="@drawable/emoji_bg"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:id="@+id/deleteButton"
@@ -40,10 +40,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:layout_toEndOf="@id/emojiTextView"
-            android:layout_toStartOf="@id/deleteButton"
             android:layout_marginStart="10dp"
             android:layout_alignTop="@id/emojiTextView" />
 
@@ -53,10 +52,10 @@
             android:layout_height="wrap_content"
             android:textColor="#FFDD2D"
             android:textSize="13sp"
-            android:textStyle="bold"
             android:layout_toEndOf="@id/emojiTextView"
             android:layout_marginStart="10dp"
-            android:layout_alignBottom="@id/emojiTextView" />
+            android:layout_below="@id/nameTextView"
+            android:layout_marginTop="2dp" />
 
     </RelativeLayout>
 

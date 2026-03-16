@@ -18,11 +18,11 @@
             android:id="@+id/transactionEmojiTextView"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:gravity="center"
             android:background="@drawable/emoji_bg"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:id="@+id/transactionNameTextView"
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:layout_toEndOf="@id/transactionEmojiTextView"
             android:layout_marginStart="12dp"
             android:layout_below="@id/transactionNameTextView"
@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:layout_toEndOf="@id/transactionEmojiTextView"
             android:layout_marginStart="12dp"
             android:layout_below="@id/transactionDateTextView"

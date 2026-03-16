@@ -48,7 +48,7 @@
             android:id="@+id/historyExpenseTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/history"
+            android:text="История расходов"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
             android:textStyle="bold"

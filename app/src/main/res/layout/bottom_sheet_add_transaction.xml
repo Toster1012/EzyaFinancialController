@@ -5,22 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#141414"
-    android:paddingHorizontal="20dp"
-    android:paddingTop="24dp"
-    android:paddingBottom="40dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Внести изменения"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+    android:background="@color/surface"
+    android:padding="20dp">
 
     <RadioGroup
-        android:id="@+id/transactionTypeGroup"
+        android:id="@+id/typeRadioGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -32,9 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Расход"
-            android:textColor="#FFFFFF"
-            android:buttonTint="#FFDD2D"
-            android:checked="true" />
+            android:textColor="?android:attr/textColorPrimary"
+            android:buttonTint="#FFDD2D" />
 
         <RadioButton
             android:id="@+id/incomeRadioButton"
@@ -42,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Доход"
-            android:textColor="#FFFFFF"
+            android:textColor="?android:attr/textColorPrimary"
             android:buttonTint="#FFDD2D" />
 
     </RadioGroup>
@@ -50,48 +38,41 @@
     <Spinner
         android:id="@+id/categorySpinner"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:background="#1A1A1A"
-        android:popupBackground="#1A1A1A" />
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="12dp" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/transactionAmountInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:hint="Сумма"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:boxStrokeColor="#FFDD2D"
-        app:boxBackgroundColor="#1A1A1A"
-        app:hintTextColor="#8A8A8A"
-        app:suffixText="₽"
-        app:suffixTextColor="#FFDD2D">
+        app:hintTextColor="#8A8A8A">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/transactionAmountEditText"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:textColor="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
             android:inputType="numberDecimal" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/commentInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Комментарий"
         android:layout_marginTop="12dp"
-        android:hint="Комментарий (необязательно)"
-        app:boxStrokeColor="#2A2A2A"
-        app:boxBackgroundColor="#1A1A1A"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxStrokeColor="#FFDD2D"
         app:hintTextColor="#8A8A8A">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/commentEditText"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:textColor="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -99,7 +80,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/saveTransactionButton"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="52dp"
         android:text="Сохранить"
         android:textColor="#0A0A0A"
         android:textStyle="bold"
