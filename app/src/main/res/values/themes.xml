@@ -2,12 +2,13 @@
 <resources>
 
     <style name="Theme.Ezya" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:statusBarColor">#0A0A0A</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:windowLightStatusBar">@bool/is_light_theme</item>
         <item name="colorPrimary">#FFDD2D</item>
         <item name="android:colorBackground">@color/background</item>
         <item name="colorSurface">@color/surface</item>
         <item name="android:textColorPrimary">@color/on_background</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
     </style>
 
     <style name="DarkAlertDialog" parent="Theme.MaterialComponents.Dialog.Alert">
@@ -18,6 +19,14 @@
 
     <style name="YellowButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">#FFDD2D</item>
+    </style>
+
+    <style name="BottomSheetTheme" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="android:colorBackground">@color/surface</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="android:textColorPrimary">@color/on_background</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="colorOnSurface">@color/on_background</item>
     </style>
 
 </resources>

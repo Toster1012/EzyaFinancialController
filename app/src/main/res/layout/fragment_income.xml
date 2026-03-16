@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0A0A0A">
+    android:background="?android:attr/colorBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -48,8 +48,8 @@
             android:id="@+id/historyIncomeTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="История доходов"
-            android:textColor="#FFFFFF"
+            android:text="@string/history"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginTop="20dp"

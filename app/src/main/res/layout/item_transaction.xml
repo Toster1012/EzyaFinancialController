@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="#1A1A1A"
-    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="@color/surface"
+    app:cardCornerRadius="14dp"
     app:cardElevation="0dp">
 
     <RelativeLayout
@@ -20,15 +20,15 @@
             android:layout_height="40dp"
             android:textSize="22sp"
             android:gravity="center"
-            android:background="#2A2A2A"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true" />
+            android:background="@drawable/emoji_bg"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true" />
 
         <TextView
             android:id="@+id/transactionNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="14sp"
             android:textStyle="bold"
             android:layout_toEndOf="@id/transactionEmojiTextView"
@@ -39,8 +39,8 @@
             android:id="@+id/transactionDateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#555555"
-            android:textSize="12sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="11sp"
             android:layout_toEndOf="@id/transactionEmojiTextView"
             android:layout_marginStart="12dp"
             android:layout_below="@id/transactionNameTextView"
@@ -50,8 +50,8 @@
             android:id="@+id/transactionCommentTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#8A8A8A"
-            android:textSize="12sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="11sp"
             android:layout_toEndOf="@id/transactionEmojiTextView"
             android:layout_marginStart="12dp"
             android:layout_below="@id/transactionDateTextView"

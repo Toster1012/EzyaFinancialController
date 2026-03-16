@@ -5,29 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
-    app:cardBackgroundColor="#1A1A1A"
-    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="@color/surface"
+    app:cardCornerRadius="14dp"
     app:cardElevation="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="12dp">
 
         <TextView
             android:id="@+id/emojiTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="32sp" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textSize="22sp"
+            android:gravity="center"
+            android:background="@drawable/emoji_bg"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true" />
 
         <TextView
             android:id="@+id/deleteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:text="✕"
-            android:textColor="#555555"
-            android:textSize="16sp"
-            android:padding="4dp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:gravity="center"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true" />
 
@@ -35,11 +39,13 @@
             android:id="@+id/nameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="13sp"
             android:textStyle="bold"
-            android:layout_below="@id/emojiTextView"
-            android:layout_marginTop="8dp" />
+            android:layout_toEndOf="@id/emojiTextView"
+            android:layout_toStartOf="@id/deleteButton"
+            android:layout_marginStart="10dp"
+            android:layout_alignTop="@id/emojiTextView" />
 
         <TextView
             android:id="@+id/amountTextView"
@@ -47,8 +53,10 @@
             android:layout_height="wrap_content"
             android:textColor="#FFDD2D"
             android:textSize="13sp"
-            android:layout_below="@id/nameTextView"
-            android:layout_marginTop="4dp" />
+            android:textStyle="bold"
+            android:layout_toEndOf="@id/emojiTextView"
+            android:layout_marginStart="10dp"
+            android:layout_alignBottom="@id/emojiTextView" />
 
     </RelativeLayout>
 

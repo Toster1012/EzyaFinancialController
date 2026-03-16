@@ -1,22 +1,24 @@
 package com.example.ezya;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import com.example.ezya.databinding.ActivitySettingsBinding;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
-    private static final String PREFS_SETTINGS = "ezya_settings";
+    static final String PREFS_SETTINGS = "ezya_settings";
     static final String KEY_THEME = "theme_dark";
     static final String KEY_LANG = "language";
 
     private ActivitySettingsBinding binding;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,55 +26,84 @@ public class SettingsActivity extends AppCompatActivity {
         binding = ActivitySettingsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SharedPreferences prefs = getSharedPreferences(PREFS_SETTINGS, MODE_PRIVATE);
+        prefs = getSharedPreferences(PREFS_SETTINGS, MODE_PRIVATE);
         boolean isDark = prefs.getBoolean(KEY_THEME, true);
         String lang = prefs.getString(KEY_LANG, "ru");
 
         binding.themeSwitch.setChecked(isDark);
-        binding.themeSwitch.setText(isDark ? R.string.theme_dark : R.string.theme_light);
+        updateThemeLabel(isDark);
+        updateLangButtons(lang);
 
-        if (lang.equals("ru")) {
-            binding.langRuButton.setSelected(true);
-            binding.langRuButton.setTextColor(0xFFFFDD2D);
-            binding.langEngButton.setTextColor(0xFF8A8A8A);
-        } else {
-            binding.langEngButton.setSelected(true);
-            binding.langEngButton.setTextColor(0xFFFFDD2D);
-            binding.langRuButton.setTextColor(0xFF8A8A8A);
-        }
-
-        binding.backButton.setOnClickListener(v -> finish());
+        binding.backButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            finish();
+        });
 
         binding.themeSwitch.setOnCheckedChangeListener((btn, isChecked) -> {
-            binding.themeSwitch.setText(isChecked ? R.string.theme_dark : R.string.theme_light);
+            SoundManager.getInstance(this).playTap();
             prefs.edit().putBoolean(KEY_THEME, isChecked).apply();
+            updateThemeLabel(isChecked);
             AppCompatDelegate.setDefaultNightMode(isChecked
                     ? AppCompatDelegate.MODE_NIGHT_YES
                     : AppCompatDelegate.MODE_NIGHT_NO);
+            recreate();
         });
 
         binding.langRuButton.setOnClickListener(v -> {
-            setLocale("ru", prefs);
-            binding.langRuButton.setTextColor(0xFFFFDD2D);
-            binding.langEngButton.setTextColor(0xFF8A8A8A);
+            SoundManager.getInstance(this).playTap();
+            setLocale("ru");
         });
 
         binding.langEngButton.setOnClickListener(v -> {
-            setLocale("en", prefs);
-            binding.langEngButton.setTextColor(0xFFFFDD2D);
-            binding.langRuButton.setTextColor(0xFF8A8A8A);
+            SoundManager.getInstance(this).playTap();
+            setLocale("en");
         });
 
-        binding.clearHistoryButton.setOnClickListener(v -> confirmClearHistory());
+        binding.clearHistoryButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            confirmClearHistory();
+        });
+
+        binding.rateAppButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=" + getPackageName())));
+            } catch (Exception e) {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+            }
+        });
+
+        binding.reportBugButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            Intent email = new Intent(Intent.ACTION_SENDTO);
+            email.setData(Uri.parse("mailto:support@ezya.app"));
+            email.putExtra(Intent.EXTRA_SUBJECT, "Bug report - Finance Calculator");
+            try { startActivity(email); } catch (Exception ignored) {}
+        });
     }
 
-    private void setLocale(String lang, SharedPreferences prefs) {
+    private void updateThemeLabel(boolean isDark) {
+        binding.themeSwitch.setText(isDark
+                ? getString(R.string.theme_dark)
+                : getString(R.string.theme_light));
+    }
+
+    private void updateLangButtons(String lang) {
+        if (lang.equals("ru")) {
+            binding.langRuButton.setTextColor(0xFFFFDD2D);
+            binding.langEngButton.setTextColor(0xFF8A8A8A);
+        } else {
+            binding.langEngButton.setTextColor(0xFFFFDD2D);
+            binding.langRuButton.setTextColor(0xFF8A8A8A);
+        }
+    }
+
+    private void setLocale(String lang) {
         prefs.edit().putString(KEY_LANG, lang).apply();
-        Locale locale = new Locale(lang);
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.setLocale(locale);
-        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+        ((App) getApplication()).applyLocale(lang);
+        updateLangButtons(lang);
         recreate();
     }
 
@@ -90,8 +121,10 @@ public class SettingsActivity extends AppCompatActivity {
             AppDatabase db = AppDatabase.getInstance(this);
             db.periodRecordDao().deleteAll();
             db.archivedTransactionDao().deleteAll();
-            runOnUiThread(() ->
-                    Toast.makeText(this, R.string.history_cleared, Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> {
+                SoundManager.getInstance(this).playDelete();
+                Toast.makeText(this, R.string.history_cleared, Toast.LENGTH_SHORT).show();
+            });
         });
     }
 

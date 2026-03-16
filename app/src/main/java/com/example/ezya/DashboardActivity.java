@@ -33,13 +33,26 @@ public class DashboardActivity extends BaseActivity {
         setupViewPager();
         checkPeriodExpired();
 
-        binding.closeButton.setOnClickListener(v -> confirmDeleteAndExit());
-        binding.addTransactionButton.setOnClickListener(v -> openAddTransaction());
-        binding.endPeriodTestButton.setOnClickListener(v -> openPeriodSummary());
-        binding.historyButton.setOnClickListener(v ->
-                startActivity(new Intent(this, HistoryActivity.class)));
-        binding.settingsButton.setOnClickListener(v ->
-                startActivity(new Intent(this, SettingsActivity.class)));
+        binding.closeButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            confirmDeleteAndExit();
+        });
+        binding.addTransactionButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            openAddTransaction();
+        });
+        binding.endPeriodTestButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            openPeriodSummary();
+        });
+        binding.historyButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            startActivity(new Intent(this, HistoryActivity.class));
+        });
+        binding.settingsButton.setOnClickListener(v -> {
+            SoundManager.getInstance(this).playTap();
+            startActivity(new Intent(this, SettingsActivity.class));
+        });
     }
 
     private void setupViewPager() {
@@ -99,6 +112,7 @@ public class DashboardActivity extends BaseActivity {
             db.categoryDao().deleteAll();
             db.transactionDao().deleteAll();
             runOnUiThread(() -> {
+                SoundManager.getInstance(this).playDelete();
                 getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().apply();
                 Intent intent = new Intent(this, WelcomeActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

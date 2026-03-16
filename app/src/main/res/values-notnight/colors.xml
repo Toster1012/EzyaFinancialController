@@ -3,4 +3,7 @@
     <color name="background">#F5F5F5</color>
     <color name="surface">#FFFFFF</color>
     <color name="on_background">#0A0A0A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="status_bar">#F5F5F5</color>
+    <bool name="is_light_theme">true</bool>
 </resources>

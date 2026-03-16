@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Ezya</string>
+    <string name="app_name">Finance Calculator</string>
 
     <string name="income">Income</string>
     <string name="expense">Expenses</string>
@@ -11,17 +11,20 @@
     <string name="end_period">End period early</string>
 
     <string name="theme_label">Theme</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark theme</string>
+    <string name="theme_light">Light theme</string>
     <string name="language_label">Language</string>
     <string name="data_label">Data</string>
     <string name="clear_history">Clear history</string>
     <string name="clear_history_title">Clear history?</string>
     <string name="clear_history_message">Current period and categories will remain unchanged.</string>
     <string name="history_cleared">History cleared</string>
-
     <string name="delete_data_title">Delete data?</string>
     <string name="delete_data_message">All categories and transactions will be deleted.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <string name="support_label">Support</string>
+    <string name="rate_app">Rate the app</string>
+    <string name="report_bug">Report a bug</string>
 </resources>
