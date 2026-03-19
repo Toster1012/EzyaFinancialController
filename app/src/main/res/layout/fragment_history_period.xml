@@ -6,6 +6,66 @@
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground">
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/periodInfoCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/periodDateRangeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/periodTypeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#8A8A8A"
+                    android:textSize="11sp"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/viewPeriodSummaryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Итоги"
+                android:textColor="#0A0A0A"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#FFDD2D"
+                app:cornerRadius="10dp"
+                app:elevation="0dp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/historyPeriodTabLayout"
         android:layout_width="0dp"
@@ -17,7 +77,7 @@
         app:tabTextColor="?android:attr/textColorSecondary"
         app:tabIndicatorColor="#FFDD2D"
         app:tabRippleColor="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/periodInfoCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

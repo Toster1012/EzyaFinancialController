@@ -8,9 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import com.example.ezya.data.db.AppDatabase;
+import com.example.ezya.App;
 import com.example.ezya.data.model.CategorySummary;
+import com.example.ezya.data.repository.TransactionRepository;
 import com.example.ezya.databinding.FragmentIncomeBinding;
 import com.example.ezya.ui.adapters.TransactionAdapter;
 
@@ -20,11 +20,11 @@ public class IncomeFragment extends Fragment {
     private String currentPeriod;
 
     public static IncomeFragment newInstance(String period) {
-        IncomeFragment fragment = new IncomeFragment();
+        IncomeFragment f = new IncomeFragment();
         Bundle args = new Bundle();
         args.putString("period", period);
-        fragment.setArguments(args);
-        return fragment;
+        f.setArguments(args);
+        return f;
     }
 
     @Nullable
@@ -39,31 +39,25 @@ public class IncomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null) currentPeriod = getArguments().getString("period", "Неделя");
 
-        if (getArguments() != null) {
-            currentPeriod = getArguments().getString("period", "Неделя");
-        }
-
-        TransactionAdapter transactionAdapter = new TransactionAdapter();
+        TransactionAdapter adapter = new TransactionAdapter();
         binding.incomeTransactionsRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireContext()));
-        binding.incomeTransactionsRecyclerView.setAdapter(transactionAdapter);
+        binding.incomeTransactionsRecyclerView.setAdapter(adapter);
         binding.incomeTransactionsRecyclerView.setNestedScrollingEnabled(false);
 
-        AppDatabase db = AppDatabase.getInstance(requireContext());
+        TransactionRepository repo = App.from(requireContext()).container.transactionRepository;
 
-        db.transactionDao().getIncomeSummaryByPeriod(currentPeriod)
-                .observe(getViewLifecycleOwner(), summaries -> {
-                    binding.incomeChartView.setSummaries(summaries);
-                    double total = 0;
-                    for (CategorySummary s : summaries) total += s.getAmount();
-                    binding.totalIncomeTextView.setText(
-                            String.format("Доходы: %.0f ₽", total));
-                });
+        repo.getIncomeSummary(currentPeriod).observe(getViewLifecycleOwner(), summaries -> {
+            binding.incomeChartView.setSummaries(summaries);
+            double total = 0;
+            for (CategorySummary s : summaries) total += s.getAmount();
+            binding.totalIncomeTextView.setText(String.format("Доходы: %.0f ₽", total));
+        });
 
-        db.transactionDao().getTransactionsByPeriodAndType(currentPeriod, false)
-                .observe(getViewLifecycleOwner(),
-                        transactionAdapter::setTransactionList);
+        repo.getByPeriodAndType(currentPeriod, false)
+                .observe(getViewLifecycleOwner(), adapter::setTransactionList);
 
         binding.incomeChartView.setOnBarClickListener((emoji, name, amount) ->
                 binding.selectedIncomeCategoryTextView.setText(

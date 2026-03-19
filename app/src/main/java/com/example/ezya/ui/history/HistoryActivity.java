@@ -1,5 +1,6 @@
 package com.example.ezya.ui.history;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,22 +8,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
-import com.example.ezya.data.db.AppDatabase;
-import com.example.ezya.utils.BarChartView;
+import com.example.ezya.App;
 import com.example.ezya.R;
-import com.example.ezya.data.db.ArchivedTransactionDao;
+import com.example.ezya.base.BaseActivity;
 import com.example.ezya.data.model.ArchivedTransaction;
 import com.example.ezya.data.model.CategorySummary;
 import com.example.ezya.data.model.PeriodRecord;
 import com.example.ezya.databinding.ActivityHistoryBinding;
+import com.example.ezya.ui.summary.HistorySummaryActivity;
+import com.example.ezya.utils.BarChartView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayoutMediator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends BaseActivity {
 
     private ActivityHistoryBinding binding;
     private HistoryPagerAdapter pagerAdapter;
@@ -52,7 +53,8 @@ public class HistoryActivity extends AppCompatActivity {
                 (tab, position) -> {
                     if (position < periodRecords.size()) {
                         PeriodRecord r = periodRecords.get(position);
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy", Locale.getDefault());
+                        SimpleDateFormat sdf = new SimpleDateFormat(
+                                "dd.MM.yy", Locale.getDefault());
                         tab.setText(sdf.format(new Date(r.getEndTime())));
                     }
                 }).attach();
@@ -62,8 +64,8 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void loadHistory() {
         Executors.newSingleThreadExecutor().execute(() -> {
-            List<PeriodRecord> records = AppDatabase.getInstance(this)
-                    .periodRecordDao().getAllPeriodsSync();
+            List<PeriodRecord> records = App.from(this)
+                    .container.database.periodRecordDao().getAllPeriodsSync();
             runOnUiThread(() -> {
                 periodRecords.clear();
                 periodRecords.addAll(records);
@@ -88,7 +90,6 @@ public class HistoryActivity extends AppCompatActivity {
         binding = null;
     }
 
-
     static class HistoryPagerAdapter extends FragmentStateAdapter {
         private final List<PeriodRecord> records;
 
@@ -100,22 +101,32 @@ public class HistoryActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            return HistoryPeriodFragment.newInstance(records.get(position).getId());
+            return HistoryPeriodFragment.newInstance(records.get(position));
         }
 
         @Override
         public int getItemCount() { return records.size(); }
     }
 
-
     public static class HistoryPeriodFragment extends Fragment {
 
-        private int periodId;
+        private static final String ARG_ID = "periodId";
+        private static final String ARG_PERIOD = "period";
+        private static final String ARG_START = "startTime";
+        private static final String ARG_END = "endTime";
 
-        public static HistoryPeriodFragment newInstance(int periodId) {
+        private int periodId;
+        private String period;
+        private long startTime;
+        private long endTime;
+
+        public static HistoryPeriodFragment newInstance(PeriodRecord record) {
             HistoryPeriodFragment f = new HistoryPeriodFragment();
             Bundle args = new Bundle();
-            args.putInt("periodId", periodId);
+            args.putInt(ARG_ID, record.getId());
+            args.putString(ARG_PERIOD, record.getPeriod());
+            args.putLong(ARG_START, record.getStartTime());
+            args.putLong(ARG_END, record.getEndTime());
             f.setArguments(args);
             return f;
         }
@@ -123,7 +134,12 @@ public class HistoryActivity extends AppCompatActivity {
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            if (getArguments() != null) periodId = getArguments().getInt("periodId");
+            if (getArguments() != null) {
+                periodId = getArguments().getInt(ARG_ID);
+                period = getArguments().getString(ARG_PERIOD);
+                startTime = getArguments().getLong(ARG_START);
+                endTime = getArguments().getLong(ARG_END);
+            }
         }
 
         @Nullable
@@ -137,6 +153,24 @@ public class HistoryActivity extends AppCompatActivity {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+            TextView dateRangeView = view.findViewById(R.id.periodDateRangeTextView);
+            TextView periodTypeView = view.findViewById(R.id.periodTypeTextView);
+            MaterialButton summaryBtn = view.findViewById(R.id.viewPeriodSummaryButton);
+
+            dateRangeView.setText(sdf.format(new Date(startTime))
+                    + " — " + sdf.format(new Date(endTime)));
+            periodTypeView.setText(period);
+
+            summaryBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), HistorySummaryActivity.class);
+                intent.putExtra("periodId", periodId);
+                intent.putExtra("startTime", startTime);
+                intent.putExtra("endTime", endTime);
+                intent.putExtra("period", period);
+                startActivity(intent);
+            });
 
             com.google.android.material.tabs.TabLayout tabLayout =
                     view.findViewById(R.id.historyPeriodTabLayout);
@@ -152,7 +186,6 @@ public class HistoryActivity extends AppCompatActivity {
             ).attach();
         }
     }
-
 
     static class HistoryTypeAdapter extends FragmentStateAdapter {
         private final int periodId;
@@ -171,7 +204,6 @@ public class HistoryActivity extends AppCompatActivity {
         @Override
         public int getItemCount() { return 2; }
     }
-
 
     public static class HistoryChartFragment extends Fragment {
 
@@ -219,8 +251,8 @@ public class HistoryActivity extends AppCompatActivity {
             recyclerView.setNestedScrollingEnabled(false);
 
             Executors.newSingleThreadExecutor().execute(() -> {
-                ArchivedTransactionDao dao = AppDatabase.getInstance(requireContext())
-                        .archivedTransactionDao();
+                var dao = App.from(requireContext())
+                        .container.database.archivedTransactionDao();
 
                 List<CategorySummary> summaries = isExpense
                         ? dao.getExpenseSummaryByPeriod(periodId)
@@ -240,7 +272,6 @@ public class HistoryActivity extends AppCompatActivity {
                             isExpense ? "Расходы: %.0f ₽" : "Доходы: %.0f ₽", finalTotal));
                     totalTextView.setTextColor(isExpense ? 0xFFFF5252 : 0xFF4CAF50);
                     adapter.setList(transactions);
-
                     chartView.setOnBarClickListener((emoji, name, amount) ->
                             selectedTextView.setText(
                                     String.format("%s %s: %.0f ₽", emoji, name, amount)));
@@ -248,7 +279,6 @@ public class HistoryActivity extends AppCompatActivity {
             });
         }
     }
-
 
     static class ArchivedTransactionAdapter extends
             RecyclerView.Adapter<ArchivedTransactionAdapter.VH> {

@@ -4,19 +4,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
-
-import com.example.ezya.data.db.AppDatabase;
-import com.example.ezya.ui.history.HistoryActivity;
-import com.example.ezya.ui.summary.PeriodSummaryActivity;
-import com.example.ezya.R;
-import com.example.ezya.ui.settings.SettingsActivity;
-import com.example.ezya.utils.SoundManager;
-import com.example.ezya.ui.welcome.WelcomeActivity;
+import com.example.ezya.App;
 import com.example.ezya.base.BaseActivity;
+import com.example.ezya.R;
+import com.example.ezya.data.repository.CategoryRepository;
+import com.example.ezya.data.repository.TransactionRepository;
 import com.example.ezya.databinding.ActivityDashboardBinding;
 import com.example.ezya.ui.adapters.AddTransactionBottomSheet;
+import com.example.ezya.ui.calendar.CalendarActivity;
+import com.example.ezya.ui.history.HistoryActivity;
+import com.example.ezya.ui.settings.SettingsActivity;
+import com.example.ezya.ui.summary.PeriodSummaryActivity;
+import com.example.ezya.ui.welcome.WelcomeActivity;
 import com.google.android.material.tabs.TabLayoutMediator;
-import java.util.concurrent.Executors;
 
 public class DashboardActivity extends BaseActivity {
 
@@ -35,39 +35,27 @@ public class DashboardActivity extends BaseActivity {
 
         currentPeriod = getIntent().getStringExtra("period");
         if (currentPeriod == null) {
-            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            currentPeriod = prefs.getString(KEY_PERIOD, "Неделя");
+            currentPeriod = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .getString(KEY_PERIOD, "Неделя");
         }
 
         setupDaysRemaining();
         setupViewPager();
         checkPeriodExpired();
 
-        binding.closeButton.setOnClickListener(v -> {
-            SoundManager.getInstance(this).playTap();
-            confirmDeleteAndExit();
-        });
-        binding.addTransactionButton.setOnClickListener(v -> {
-            SoundManager.getInstance(this).playTap();
-            openAddTransaction();
-        });
-        binding.endPeriodTestButton.setOnClickListener(v -> {
-            SoundManager.getInstance(this).playTap();
-            openPeriodSummary();
-        });
-        binding.historyButton.setOnClickListener(v -> {
-            SoundManager.getInstance(this).playTap();
-            startActivity(new Intent(this, HistoryActivity.class));
-        });
-        binding.settingsButton.setOnClickListener(v -> {
-            SoundManager.getInstance(this).playTap();
-            startActivity(new Intent(this, SettingsActivity.class));
-        });
+        binding.closeButton.setOnClickListener(v -> confirmDeleteAndExit());
+        binding.addTransactionButton.setOnClickListener(v -> openAddTransaction());
+        binding.endPeriodTestButton.setOnClickListener(v -> openPeriodSummary());
+        binding.historyButton.setOnClickListener(v ->
+                startActivity(new Intent(this, HistoryActivity.class)));
+        binding.settingsButton.setOnClickListener(v ->
+                startActivity(new Intent(this, SettingsActivity.class)));
+        binding.calendarButton.setOnClickListener(v ->
+                startActivity(new Intent(this, CalendarActivity.class)));
     }
 
     private void setupViewPager() {
-        DashboardPagerAdapter adapter = new DashboardPagerAdapter(this, currentPeriod);
-        binding.viewPager.setAdapter(adapter);
+        binding.viewPager.setAdapter(new DashboardPagerAdapter(this, currentPeriod));
         new TabLayoutMediator(binding.tabLayout, binding.viewPager,
                 (tab, position) -> tab.setText(position == 0
                         ? getString(R.string.income) : getString(R.string.expense))
@@ -81,24 +69,24 @@ public class DashboardActivity extends BaseActivity {
     }
 
     private void setupDaysRemaining() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        long startTime = prefs.getLong(KEY_START_TIME, System.currentTimeMillis());
+        long startTime = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getLong(KEY_START_TIME, System.currentTimeMillis());
         long remainingMs = getPeriodMs() - (System.currentTimeMillis() - startTime);
         long days = remainingMs > 0 ? remainingMs / (24 * 60 * 60 * 1000) : 0;
         binding.daysRemainingTextView.setText(getString(R.string.days_remaining, days));
     }
 
     private void checkPeriodExpired() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        long startTime = prefs.getLong(KEY_START_TIME, System.currentTimeMillis());
+        long startTime = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getLong(KEY_START_TIME, System.currentTimeMillis());
         if (System.currentTimeMillis() - startTime >= getPeriodMs()) openPeriodSummary();
     }
 
     private long getPeriodMs() {
         switch (currentPeriod) {
             case "Месяц": case "Month": return 30L * 24 * 60 * 60 * 1000;
-            case "Год": case "Year":   return 365L * 24 * 60 * 60 * 1000;
-            default:                   return 7L * 24 * 60 * 60 * 1000;
+            case "Год":   case "Year":  return 365L * 24 * 60 * 60 * 1000;
+            default:                    return 7L * 24 * 60 * 60 * 1000;
         }
     }
 
@@ -117,19 +105,16 @@ public class DashboardActivity extends BaseActivity {
     }
 
     private void deleteAllAndExit() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(this);
-            db.categoryDao().deleteAll();
-            db.transactionDao().deleteAll();
-            runOnUiThread(() -> {
-                SoundManager.getInstance(this).playDelete();
-                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().apply();
-                Intent intent = new Intent(this, WelcomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            });
-        });
+        CategoryRepository catRepo = App.from(this).container.categoryRepository;
+        TransactionRepository txRepo = App.from(this).container.transactionRepository;
+
+        catRepo.deleteAll(() -> txRepo.deleteAll(() -> runOnUiThread(() -> {
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().clear().apply();
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        })));
     }
 
     @Override

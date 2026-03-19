@@ -8,9 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import com.example.ezya.data.db.AppDatabase;
+import com.example.ezya.App;
 import com.example.ezya.data.model.CategorySummary;
+import com.example.ezya.data.repository.TransactionRepository;
 import com.example.ezya.databinding.FragmentExpenseBinding;
 import com.example.ezya.ui.adapters.TransactionAdapter;
 
@@ -20,11 +20,11 @@ public class ExpenseFragment extends Fragment {
     private String currentPeriod;
 
     public static ExpenseFragment newInstance(String period) {
-        ExpenseFragment fragment = new ExpenseFragment();
+        ExpenseFragment f = new ExpenseFragment();
         Bundle args = new Bundle();
         args.putString("period", period);
-        fragment.setArguments(args);
-        return fragment;
+        f.setArguments(args);
+        return f;
     }
 
     @Nullable
@@ -39,31 +39,25 @@ public class ExpenseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null) currentPeriod = getArguments().getString("period", "Неделя");
 
-        if (getArguments() != null) {
-            currentPeriod = getArguments().getString("period", "Неделя");
-        }
-
-        TransactionAdapter transactionAdapter = new TransactionAdapter();
+        TransactionAdapter adapter = new TransactionAdapter();
         binding.expenseTransactionsRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireContext()));
-        binding.expenseTransactionsRecyclerView.setAdapter(transactionAdapter);
+        binding.expenseTransactionsRecyclerView.setAdapter(adapter);
         binding.expenseTransactionsRecyclerView.setNestedScrollingEnabled(false);
 
-        AppDatabase db = AppDatabase.getInstance(requireContext());
+        TransactionRepository repo = App.from(requireContext()).container.transactionRepository;
 
-        db.transactionDao().getExpenseSummaryByPeriod(currentPeriod)
-                .observe(getViewLifecycleOwner(), summaries -> {
-                    binding.expenseChartView.setSummaries(summaries);
-                    double total = 0;
-                    for (CategorySummary s : summaries) total += s.getAmount();
-                    binding.totalExpenseTextView.setText(
-                            String.format("Расходы: %.0f ₽", total));
-                });
+        repo.getExpenseSummary(currentPeriod).observe(getViewLifecycleOwner(), summaries -> {
+            binding.expenseChartView.setSummaries(summaries);
+            double total = 0;
+            for (CategorySummary s : summaries) total += s.getAmount();
+            binding.totalExpenseTextView.setText(String.format("Расходы: %.0f ₽", total));
+        });
 
-        db.transactionDao().getTransactionsByPeriodAndType(currentPeriod, true)
-                .observe(getViewLifecycleOwner(),
-                        transactionAdapter::setTransactionList);
+        repo.getByPeriodAndType(currentPeriod, true)
+                .observe(getViewLifecycleOwner(), adapter::setTransactionList);
 
         binding.expenseChartView.setOnBarClickListener((emoji, name, amount) ->
                 binding.selectedExpenseCategoryTextView.setText(

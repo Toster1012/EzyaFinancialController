@@ -7,13 +7,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.example.ezya.data.db.AppDatabase;
-import com.example.ezya.R;
+import com.example.ezya.App;
 import com.example.ezya.data.model.Category;
+import com.example.ezya.data.repository.CategoryRepository;
 import com.example.ezya.databinding.BottomSheetAddCategoryBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import java.util.concurrent.Executors;
 
 public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
 
@@ -25,9 +23,9 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
     private Category editingCategory;
 
     private final String[] emojiOptions = {
-            "🍕", "🚗", "🏠", "👕", "💊", "📚", "✈️", "🎮", "🐾", "💪",
-            "☕", "🛒", "💄", "🎵", "🏋️", "📦", "💡", "🎁", "🍺", "🌿",
-            "💼", "💰", "🏦", "📈", "🎓", "🔧", "🏪", "🎪"
+            "🍕","🚗","🏠","👕","💊","📚","✈️","🎮","🐾","💪",
+            "☕","🛒","💄","🎵","🏋️","📦","💡","🎁","🍺","🌿",
+            "💼","💰","🏦","📈","🎓","🔧","🏪","🎪"
     };
 
     public static AddCategoryBottomSheet newInstance(String period, boolean isIncome,
@@ -80,11 +78,9 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
                         getArguments().getString("editName"),
                         getArguments().getString("editEmoji"),
                         getArguments().getDouble("editAmount"),
-                        currentPeriod,
-                        isIncome
+                        currentPeriod, isIncome
                 );
                 editingCategory.setId(editId);
-
                 selectedEmoji = editingCategory.getEmoji();
                 binding.categoryNameEditText.setText(editingCategory.getName());
                 binding.categoryAmountEditText.setText(
@@ -106,8 +102,8 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
     private void buildEmojiGrid() {
         for (String emoji : emojiOptions) {
             View emojiView = LayoutInflater.from(requireContext())
-                    .inflate(R.layout.item_emoji, binding.emojiGridLayout, false);
-            android.widget.TextView tv = emojiView.findViewById(R.id.emojiItemTextView);
+                    .inflate(com.example.ezya.R.layout.item_emoji, binding.emojiGridLayout, false);
+            android.widget.TextView tv = emojiView.findViewById(com.example.ezya.R.id.emojiItemTextView);
             tv.setText(emoji);
             tv.setOnClickListener(v -> {
                 selectedEmoji = emoji;
@@ -127,23 +123,12 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
         }
 
         double amount = Double.parseDouble(amountStr);
+        CategoryRepository repo = App.from(requireContext()).container.categoryRepository;
 
-        if (!isIncome && totalIncome <= 0) {
-            Toast.makeText(requireContext(),
-                    "Сначала добавьте категории дохода", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(requireContext());
-            double alreadyAllocated = db.categoryDao()
-                    .getTotalExpenseByPeriod(currentPeriod);
-
-            if (editingCategory != null) {
-                alreadyAllocated -= editingCategory.getAmount();
-            }
-
-            double remaining = totalIncome - alreadyAllocated;
+        repo.getTotalExpense(currentPeriod, alreadyAllocated -> {
+            double adj = alreadyAllocated;
+            if (editingCategory != null) adj -= editingCategory.getAmount();
+            double remaining = totalIncome - adj;
 
             requireActivity().runOnUiThread(() -> {
                 if (!isIncome && amount > remaining) {
@@ -152,20 +137,15 @@ public class AddCategoryBottomSheet extends BottomSheetDialogFragment {
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    if (editingCategory != null) {
-                        editingCategory.setName(name);
-                        editingCategory.setEmoji(selectedEmoji);
-                        editingCategory.setAmount(amount);
-                        db.categoryDao().update(editingCategory);
-                    } else {
-                        db.categoryDao().insert(
-                                new Category(name, selectedEmoji, amount,
-                                        currentPeriod, isIncome));
-                    }
-                    requireActivity().runOnUiThread(this::dismiss);
-                });
+                if (editingCategory != null) {
+                    editingCategory.setName(name);
+                    editingCategory.setEmoji(selectedEmoji);
+                    editingCategory.setAmount(amount);
+                    repo.update(editingCategory, this::dismiss);
+                } else {
+                    repo.insert(new Category(name, selectedEmoji, amount,
+                            currentPeriod, isIncome), this::dismiss);
+                }
             });
         });
     }

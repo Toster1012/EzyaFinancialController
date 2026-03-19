@@ -8,15 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.example.ezya.data.db.AppDatabase;
+import com.example.ezya.App;
 import com.example.ezya.data.model.Category;
 import com.example.ezya.data.model.Transaction;
+import com.example.ezya.data.repository.CategoryRepository;
+import com.example.ezya.data.repository.TransactionRepository;
 import com.example.ezya.databinding.BottomSheetAddTransactionBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
 
@@ -61,40 +61,30 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
             binding.expenseRadioButton.setEnabled(false);
         }
 
-        AppDatabase db = AppDatabase.getInstance(requireContext());
+        CategoryRepository categoryRepo = App.from(requireContext()).container.categoryRepository;
 
-        db.categoryDao().getCategoriesByPeriodAndType(currentPeriod, false)
+        categoryRepo.getByPeriodAndType(currentPeriod, false)
                 .observe(getViewLifecycleOwner(), categories -> {
                     expenseCategories = categories;
-                    if (binding.expenseRadioButton.isChecked()) {
-                        refreshSpinner(expenseCategories);
-                    }
+                    if (binding.expenseRadioButton.isChecked()) refreshSpinner(expenseCategories);
                 });
 
-        db.categoryDao().getCategoriesByPeriodAndType(currentPeriod, true)
+        categoryRepo.getByPeriodAndType(currentPeriod, true)
                 .observe(getViewLifecycleOwner(), categories -> {
                     incomeCategories = categories;
-                    if (binding.incomeRadioButton.isChecked()) {
-                        refreshSpinner(incomeCategories);
-                    }
+                    if (binding.incomeRadioButton.isChecked()) refreshSpinner(incomeCategories);
                 });
 
         binding.expenseRadioButton.setOnClickListener(v -> refreshSpinner(expenseCategories));
         binding.incomeRadioButton.setOnClickListener(v -> refreshSpinner(incomeCategories));
-
         binding.saveTransactionButton.setOnClickListener(v -> saveTransaction());
     }
 
     private void refreshSpinner(List<Category> categories) {
         List<String> names = new ArrayList<>();
-        for (Category c : categories) {
-            names.add(c.getEmoji() + " " + c.getName());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                names);
-        binding.categorySpinner.setAdapter(adapter);
+        for (Category c : categories) names.add(c.getEmoji() + " " + c.getName());
+        binding.categorySpinner.setAdapter(new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_dropdown_item_1line, names));
     }
 
     private void saveTransaction() {
@@ -102,36 +92,26 @@ public class AddTransactionBottomSheet extends BottomSheetDialogFragment {
         String amountStr = binding.transactionAmountEditText.getText().toString().trim();
         String comment = binding.commentEditText.getText().toString().trim();
         boolean isExpense = binding.expenseRadioButton.isChecked();
-
         List<Category> currentCategories = isExpense ? expenseCategories : incomeCategories;
 
         if (amountStr.isEmpty()) {
             Toast.makeText(requireContext(), "Введите сумму", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (currentCategories.isEmpty() || selectedIndex < 0) {
             Toast.makeText(requireContext(), "Нет категорий", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Category selectedCategory = currentCategories.get(selectedIndex);
-        double amount = Double.parseDouble(amountStr);
-
+        Category selected = currentCategories.get(selectedIndex);
         Transaction transaction = new Transaction(
-                selectedCategory.getName(),
-                selectedCategory.getEmoji(),
-                amount,
-                isExpense,
-                currentPeriod,
-                System.currentTimeMillis(),
-                comment
+                selected.getName(), selected.getEmoji(),
+                Double.parseDouble(amountStr), isExpense,
+                currentPeriod, System.currentTimeMillis(), comment
         );
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase.getInstance(requireContext()).transactionDao().insert(transaction);
-            requireActivity().runOnUiThread(this::dismiss);
-        });
+        TransactionRepository repo = App.from(requireContext()).container.transactionRepository;
+        repo.insert(transaction, this::dismiss);
     }
 
     @Override

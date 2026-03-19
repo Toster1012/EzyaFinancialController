@@ -28,6 +28,8 @@
         <activity android:name=".ui.summary.PeriodSummaryActivity" android:exported="false" />
         <activity android:name=".ui.history.HistoryActivity" android:exported="false" />
         <activity android:name=".ui.settings.SettingsActivity" android:exported="false" />
+        <activity android:name=".ui.calendar.CalendarActivity" android:exported="false" />
+        <activity android:name=".ui.summary.HistorySummaryActivity" android:exported="false" />
 
     </application>
 

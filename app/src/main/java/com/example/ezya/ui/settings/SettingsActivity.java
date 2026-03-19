@@ -6,19 +6,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatDelegate;
-
 import com.example.ezya.App;
-import com.example.ezya.data.db.AppDatabase;
-import com.example.ezya.R;
 import com.example.ezya.base.BaseActivity;
+import com.example.ezya.R;
 import com.example.ezya.databinding.ActivitySettingsBinding;
-import java.util.concurrent.Executors;
 
 public class SettingsActivity extends BaseActivity {
 
-    static final String PREFS_SETTINGS = "ezya_settings";
+    public static final String PREFS_SETTINGS = "ezya_settings";
     public static final String KEY_THEME = "theme_dark";
     public static final String KEY_LANG = "language";
+
     private ActivitySettingsBinding binding;
     private SharedPreferences prefs;
 
@@ -43,6 +41,7 @@ public class SettingsActivity extends BaseActivity {
             AppCompatDelegate.setDefaultNightMode(isChecked
                     ? AppCompatDelegate.MODE_NIGHT_YES
                     : AppCompatDelegate.MODE_NIGHT_NO);
+            updateThemeLabel(isChecked);
         });
 
         binding.langRuButton.setOnClickListener(v -> {
@@ -82,39 +81,26 @@ public class SettingsActivity extends BaseActivity {
 
     private void updateThemeLabel(boolean isDark) {
         binding.themeSwitch.setText(isDark
-                ? getString(R.string.theme_dark)
-                : getString(R.string.theme_light));
+                ? getString(R.string.theme_dark) : getString(R.string.theme_light));
     }
 
     private void updateLangButtons(String lang) {
-        int activeColor = getResources().getColor(R.color.lang_active, getTheme());
-        int inactiveColor = getResources().getColor(R.color.lang_inactive, getTheme());
-        if (lang.equals("ru")) {
-            binding.langRuButton.setTextColor(activeColor);
-            binding.langEngButton.setTextColor(inactiveColor);
-        } else {
-            binding.langEngButton.setTextColor(activeColor);
-            binding.langRuButton.setTextColor(inactiveColor);
-        }
+        int active = getResources().getColor(R.color.lang_active, getTheme());
+        int inactive = getResources().getColor(R.color.lang_inactive, getTheme());
+        binding.langRuButton.setTextColor(lang.equals("ru") ? active : inactive);
+        binding.langEngButton.setTextColor(lang.equals("en") ? active : inactive);
     }
 
     private void confirmClearHistory() {
         new androidx.appcompat.app.AlertDialog.Builder(this, R.style.DarkAlertDialog)
                 .setTitle(R.string.clear_history_title)
                 .setMessage(R.string.clear_history_message)
-                .setPositiveButton(R.string.yes, (d, w) -> clearHistory())
+                .setPositiveButton(R.string.yes, (d, w) ->
+                        App.from(this).container.historyRepository.deleteAll(() ->
+                                runOnUiThread(() -> Toast.makeText(this,
+                                        R.string.history_cleared, Toast.LENGTH_SHORT).show())))
                 .setNegativeButton(R.string.no, null)
                 .show();
-    }
-
-    private void clearHistory() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(this);
-            db.periodRecordDao().deleteAll();
-            db.archivedTransactionDao().deleteAll();
-            runOnUiThread(() ->
-                    Toast.makeText(this, R.string.history_cleared, Toast.LENGTH_SHORT).show());
-        });
     }
 
     @Override

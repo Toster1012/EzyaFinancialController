@@ -5,20 +5,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.GridLayoutManager;
-
-import com.example.ezya.data.db.AppDatabase;
-import com.example.ezya.ui.dashboard.DashboardActivity;
+import com.example.ezya.App;
+import com.example.ezya.base.BaseActivity;
 import com.example.ezya.data.model.Category;
+import com.example.ezya.data.repository.CategoryRepository;
 import com.example.ezya.databinding.ActivityBudgetBinding;
 import com.example.ezya.ui.adapters.CategoryAdapter;
-
+import com.example.ezya.ui.dashboard.DashboardActivity;
 import java.util.List;
-import java.util.concurrent.Executors;
 
-public class BudgetActivity extends AppCompatActivity {
+public class BudgetActivity extends BaseActivity {
 
     private static final String PREFS_NAME = "ezya_prefs";
     private static final String KEY_START_TIME = "start_time";
@@ -26,6 +24,7 @@ public class BudgetActivity extends AppCompatActivity {
 
     private ActivityBudgetBinding binding;
     private CategoryAdapter categoryAdapter;
+    private CategoryRepository categoryRepo;
     private String selectedPeriod = "Неделя";
     private boolean isIncomeStep = true;
     private double totalIncome = 0;
@@ -38,6 +37,8 @@ public class BudgetActivity extends AppCompatActivity {
         binding = ActivityBudgetBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        categoryRepo = App.from(this).container.categoryRepository;
+
         isNewPeriod = getIntent().getBooleanExtra("isNewPeriod", false);
         if (isNewPeriod) {
             String savedPeriod = getIntent().getStringExtra("period");
@@ -48,7 +49,12 @@ public class BudgetActivity extends AppCompatActivity {
         setupRecyclerView();
 
         if (isNewPeriod) {
-            loadTotalIncomeAndProceed();
+            categoryRepo.getTotalIncome(selectedPeriod, total -> runOnUiThread(() -> {
+                totalIncome = total;
+                isIncomeStep = true;
+                observeCategories();
+                updateStepUi();
+            }));
         } else {
             observeCategories();
             updateStepUi();
@@ -56,18 +62,6 @@ public class BudgetActivity extends AppCompatActivity {
 
         binding.addCategoryButton.setOnClickListener(v -> openAddCategorySheet());
         binding.nextButton.setOnClickListener(v -> onNextClicked());
-    }
-
-    private void loadTotalIncomeAndProceed() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            totalIncome = AppDatabase.getInstance(this)
-                    .categoryDao().getTotalIncomeByPeriod(selectedPeriod);
-            runOnUiThread(() -> {
-                isIncomeStep = true;
-                observeCategories();
-                updateStepUi();
-            });
-        });
     }
 
     private void setupPeriodDropdown() {
@@ -84,11 +78,7 @@ public class BudgetActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         categoryAdapter = new CategoryAdapter();
-        categoryAdapter.setDeleteListener(category ->
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    AppDatabase.getInstance(this).categoryDao().delete(category);
-                    if (!isIncomeStep) updateRemainingBudget();
-                }));
+        categoryAdapter.setDeleteListener(category -> categoryRepo.delete(category));
         categoryAdapter.setEditListener(category ->
                 AddCategoryBottomSheet.newInstanceEdit(category, selectedPeriod, totalIncome)
                         .show(getSupportFragmentManager(), "EditCategory"));
@@ -97,14 +87,8 @@ public class BudgetActivity extends AppCompatActivity {
     }
 
     private void observeCategories() {
-        if (activeLiveData != null) {
-            activeLiveData.removeObservers(this);
-        }
-
-        activeLiveData = AppDatabase.getInstance(this)
-                .categoryDao()
-                .getCategoriesByPeriodAndType(selectedPeriod, isIncomeStep);
-
+        if (activeLiveData != null) activeLiveData.removeObservers(this);
+        activeLiveData = categoryRepo.getByPeriodAndType(selectedPeriod, isIncomeStep);
         activeLiveData.observe(this, categories -> {
             categoryAdapter.setCategoryList(categories);
             if (!isIncomeStep) {
@@ -112,14 +96,6 @@ public class BudgetActivity extends AppCompatActivity {
                 for (Category c : categories) totalExpense += c.getAmount();
                 updateRemainingText(totalIncome - totalExpense);
             }
-        });
-    }
-
-    private void updateRemainingBudget() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            double totalExpense = AppDatabase.getInstance(this)
-                    .categoryDao().getTotalExpenseByPeriod(selectedPeriod);
-            runOnUiThread(() -> updateRemainingText(totalIncome - totalExpense));
         });
     }
 
@@ -144,8 +120,7 @@ public class BudgetActivity extends AppCompatActivity {
         } else {
             binding.stepTitleTextView.setText("Категории расходов");
             binding.totalIncomeTextView.setVisibility(View.VISIBLE);
-            binding.totalIncomeTextView.setText(
-                    String.format("Доход: %.0f ₽", totalIncome));
+            binding.totalIncomeTextView.setText(String.format("Доход: %.0f ₽", totalIncome));
             binding.remainingBudgetTextView.setVisibility(View.VISIBLE);
             binding.nextButton.setText("Далее →");
         }
@@ -153,31 +128,26 @@ public class BudgetActivity extends AppCompatActivity {
 
     private void onNextClicked() {
         if (isIncomeStep) {
-            Executors.newSingleThreadExecutor().execute(() -> {
-                totalIncome = AppDatabase.getInstance(this)
-                        .categoryDao().getTotalIncomeByPeriod(selectedPeriod);
-                runOnUiThread(() -> {
-                    if (totalIncome <= 0) {
-                        android.widget.Toast.makeText(this,
-                                "Добавьте хотя бы одну категорию дохода",
-                                android.widget.Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    isIncomeStep = false;
-                    observeCategories();
-                    updateStepUi();
-                });
-            });
+            categoryRepo.getTotalIncome(selectedPeriod, total -> runOnUiThread(() -> {
+                totalIncome = total;
+                if (totalIncome <= 0) {
+                    android.widget.Toast.makeText(this,
+                            "Добавьте хотя бы одну категорию дохода",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                isIncomeStep = false;
+                observeCategories();
+                updateStepUi();
+            }));
         } else {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             prefs.edit()
                     .putLong(KEY_START_TIME, System.currentTimeMillis())
                     .putString(KEY_PERIOD, selectedPeriod)
                     .apply();
-
             Intent intent = new Intent(this, DashboardActivity.class);
             intent.putExtra("period", selectedPeriod);
-            intent.putExtra("totalIncome", totalIncome);
             startActivity(intent);
             finish();
         }

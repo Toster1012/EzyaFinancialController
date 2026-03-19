@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/dayTextView"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="6dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/incomeIndicator"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:background="@drawable/dot_green"
+            android:layout_marginEnd="2dp"
+            android:visibility="invisible" />
+
+        <View
+            android:id="@+id/expenseIndicator"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:background="@drawable/dot_red"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+
+</LinearLayout>
