@@ -1,88 +1,91 @@
-# Ezya - Finance Calculator
+# Ezya - Калькулятор финансов
 
-A personal finance tracking application for Android. Track income and expenses by category, analyze spending with charts, and review history across periods.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+Приложение для отслеживания личных финансов на Android. Ведите учёт доходов и расходов по категориям, анализируйте траты с помощью диаграмм и просматривайте историю периодов.
 
-- Period-based budgeting (week, month, year)
-- Income and expense categories with custom emoji
-- Bar charts for visual spending analysis
-- Transaction calendar with daily breakdown
-- Period history with archived results
-- Light and dark theme
-- Russian and English localization
+## Возможности
 
-## How to Use
+- Бюджетирование по периодам (неделя, месяц, год)
+- Категории доходов и расходов с пользовательскими иконками
+- Столбчатые диаграммы для визуального анализа трат
+- Календарь транзакций с разбивкой по дням
+- История завершённых периодов с архивными результатами
+- Светлая и тёмная тема
+- Русский и английский языки интерфейса
 
-### 1. First Launch
+## Как пользоваться
 
-On the welcome screen tap "Start" to begin setup. You will be taken through a two-step budget configuration.
+### 1. Первый запуск
 
-### 2. Setting Up Income Categories
+На экране приветствия нажмите «Начать» для настройки. Вы пройдёте двухшаговую конфигурацию бюджета.
 
-Choose a period length — week, month, or year. Then add your income sources. For each category enter a name, select an emoji icon, and enter the planned amount. Add as many categories as needed.
+### 2. Настройка категорий доходов
 
-### 3. Setting Up Expense Categories
+Выберите длину периода — неделя, месяц или год. Затем добавьте источники дохода. Для каждой категории введите название, выберите иконку и укажите планируемую сумму.
 
-After confirming your income, add expense categories. The total across all expense categories cannot exceed your planned income. Remaining budget is shown in real time as you add categories. Tap any existing category to edit it.
+### 3. Настройка категорий расходов
 
-### 4. Main Dashboard
+После подтверждения доходов добавьте категории расходов. Общая сумма расходов не может превышать плановый доход. Остаток бюджета отображается в реальном времени. Нажмите на существующую категорию чтобы отредактировать её.
 
-The dashboard shows two tabs — Income and Expenses — which you can switch between by swiping left or right. Each tab contains a bar chart of transactions by category and a transaction history list. Tap any bar in the chart to see the category name and amount.
+### 4. Главный экран
 
-### 5. Adding Transactions
+Главный экран содержит две вкладки — Доходы и Расходы — между которыми можно переключаться свайпом влево или вправо. Каждая вкладка содержит столбчатую диаграмму транзакций по категориям и список истории операций. Нажмите на столбец диаграммы чтобы увидеть название категории и сумму.
 
-Tap "Add transaction" to record an actual income or expense. The type is pre-selected based on the currently active tab. Choose a category from the list, enter the amount, and optionally add a comment.
+### 5. Внесение изменений
 
-### 6. Calendar
+Нажмите «Внести изменения» чтобы записать реальный доход или расход. Тип операции выбирается автоматически в зависимости от активной вкладки. Выберите категорию из списка, введите сумму и при необходимости добавьте комментарий.
 
-Tap the calendar button in the top left corner of the dashboard. The calendar shows the current month. Days with transactions are marked with green dots for income and red dots for expenses. Tap any marked day to see a detailed breakdown of all transactions for that day, including totals and balance.
+### 6. Календарь
 
-### 7. Ending a Period
+Кнопка в левом верхнем углу главного экрана открывает календарь. Дни с транзакциями отмечены точками — зелёной для доходов, красной для расходов. Нажмите на отмеченный день чтобы увидеть подробный список всех операций за этот день с итогами и балансом.
 
-When the period expires, the summary screen opens automatically. You can also end a period early using the "End period early" button. The summary shows total income, total expenses, and savings or overspending per category.
+### 7. Завершение периода
 
-### 8. Starting a New Period
+По истечении периода экран итогов открывается автоматически. Также можно завершить период досрочно с помощью соответствующей кнопки. В итогах отображаются общий доход, общий расход и экономия или перерасход по каждой категории.
 
-After reviewing the summary, tap "Start new period". Your categories are preserved so you do not need to set them up again. You can add, remove, or edit categories before confirming the new period.
+### 8. Новый период
 
-### 9. History
+После просмотра итогов нажмите «Начать новый период». Категории сохраняются — их не нужно настраивать заново. Перед подтверждением нового периода можно добавить, удалить или отредактировать категории.
 
-Tap "History" on the dashboard to browse all completed periods. Each period shows its start and end dates. Swipe between periods using the tabs at the top. Inside each period you can view income and expense charts and tap "Results" to see the full summary.
+### 9. История
 
-### 10. Settings
+Нажмите «История» на главном экране чтобы просмотреть все завершённые периоды. Для каждого периода указаны даты начала и окончания. Листайте между периодами с помощью вкладок вверху. Внутри каждого периода доступны диаграммы доходов и расходов, а кнопка «Итоги» открывает полную сводку.
 
-Open settings via the gear icon on the dashboard. Available options:
+### 10. Настройки
 
-- Toggle between dark and light theme
-- Switch interface language between Russian and English
-- Clear all archived history while keeping the current period intact
-- Rate the app or report a bug
+Откройте настройки через иконку шестерёнки на главном экране. Доступные параметры:
 
-## Installation
+- Переключение между тёмной и светлой темой
+- Смена языка интерфейса между русским и английским
+- Очистка архивной истории без затрагивания текущего периода
+- Оценить приложение или сообщить об ошибке
 
-Clone the repository and open in Android Studio. Build and run on a device or emulator with Android 7.0 (API 24) or higher.
+## Установка
+
+Склонируйте репозиторий и откройте в Android Studio. Соберите и запустите на устройстве или эмуляторе с Android 7.0 (API 24) или выше.
+
 ```bash
 git clone https://github.com/Toster1012/EzyaFinancialController.git
 ```
 
-Open in Android Studio, wait for Gradle sync to complete, then run the project.
+Откройте проект в Android Studio, дождитесь синхронизации Gradle и запустите приложение.
 
-## Requirements
+## Требования
 
-- Android 7.0 (API level 24) or higher
-- Android Studio Hedgehog or newer
+- Android 7.0 (API 24) или выше
+- Android Studio Hedgehog или новее
 
-## Tech Stack
+## Стек технологий
 
 - Java
 - Room (SQLite)
 - LiveData
 - ViewPager2
 - Material Components
-- Custom BarChartView (canvas-based)
+- Кастомный BarChartView на Canvas
 
-## License
+## Лицензия
 
 MIT License
 
