@@ -4,6 +4,9 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import androidx.appcompat.app.AppCompatDelegate;
+
+import com.example.ezya.ui.settings.SettingsActivity;
+
 import java.util.Locale;
 
 public class App extends Application {

@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Ezya">
 
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".ui.welcome.WelcomeActivity"
             android:exported="true"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
@@ -23,11 +23,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".BudgetActivity" android:exported="false" />
-        <activity android:name=".DashboardActivity" android:exported="false" />
-        <activity android:name=".PeriodSummaryActivity" android:exported="false" />
-        <activity android:name=".HistoryActivity" android:exported="false" />
-        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".ui.budget.BudgetActivity" android:exported="false" />
+        <activity android:name=".ui.dashboard.DashboardActivity" android:exported="false" />
+        <activity android:name=".ui.summary.PeriodSummaryActivity" android:exported="false" />
+        <activity android:name=".ui.history.HistoryActivity" android:exported="false" />
+        <activity android:name=".ui.settings.SettingsActivity" android:exported="false" />
 
     </application>
 
