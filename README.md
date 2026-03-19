@@ -76,15 +76,6 @@ git clone https://github.com/Toster1012/EzyaFinancialController.git
 - Android 7.0 (API 24) или выше
 - Android Studio Hedgehog или новее
 
-## Стек технологий
-
-- Java
-- Room (SQLite)
-- LiveData
-- ViewPager2
-- Material Components
-- Кастомный BarChartView на Canvas
-
 ## Лицензия
 
 MIT License
