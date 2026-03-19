@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Как пользоваться"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1. Настройка периода"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Выберите период — неделя, месяц или год. Это временной отрезок для отслеживания бюджета."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2. Категории доходов"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Добавьте источники доходов — зарплата, фриланс и т.д. Укажите сумму и выберите эмодзи."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3. Категории расходов"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Распределите бюджет по категориям расходов — еда, транспорт, развлечения. Сумма не может превышать доход."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4. Внесение изменений"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="На главном экране нажмите «Внести изменения» чтобы записать реальный доход или расход по любой категории."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5. Диаграммы"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Листайте влево/вправо между доходами и расходами. Нажмите на столбец диаграммы чтобы увидеть детали категории."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6. Календарь"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Кнопка 📅 открывает календарь. Дни с транзакциями отмечены точками. Нажмите на день чтобы увидеть все операции за него."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7. Завершение периода"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="По истечении периода или при нажатии «Досрочно завершить» откроется итоговый экран с результатами. После этого можно начать новый период — категории сохранятся."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8. История"
+            android:textColor="#FFDD2D"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Все завершённые периоды сохраняются в истории. Там можно просмотреть диаграммы и итоги каждого периода."
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp" />
+
+    </LinearLayout>
+
+</ScrollView>

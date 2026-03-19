@@ -3,11 +3,16 @@ package com.example.ezya.ui.welcome;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
 import com.example.ezya.App;
 import com.example.ezya.R;
 import com.example.ezya.base.BaseActivity;
-import com.example.ezya.ui.dashboard.DashboardActivity;
 import com.example.ezya.ui.budget.BudgetActivity;
+import com.example.ezya.ui.dashboard.DashboardActivity;
 import java.util.concurrent.Executors;
 
 public class WelcomeActivity extends BaseActivity {
@@ -29,7 +34,6 @@ public class WelcomeActivity extends BaseActivity {
                 double totalIncome = App.from(this)
                         .container.categoryRepository
                         .getTotalIncomeByPeriod(period);
-
                 runOnUiThread(() -> {
                     if (totalIncome > 0) {
                         Intent intent = new Intent(this, DashboardActivity.class);
@@ -50,7 +54,20 @@ public class WelcomeActivity extends BaseActivity {
         }
 
         setContentView(R.layout.activity_welcome);
+
         findViewById(R.id.startButton).setOnClickListener(v ->
                 startActivity(new Intent(this, BudgetActivity.class)));
+
+        findViewById(R.id.helpButton).setOnClickListener(v -> showHelpDialog());
+    }
+
+    private void showHelpDialog() {
+        View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_help, null);
+
+        new AlertDialog.Builder(this, R.style.DarkAlertDialog)
+                .setView(dialogView)
+                .setPositiveButton("Понятно", null)
+                .show();
     }
 }

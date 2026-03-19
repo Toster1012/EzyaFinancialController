@@ -7,12 +7,26 @@
     android:background="?android:attr/colorBackground">
 
     <TextView
+        android:id="@+id/helpButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="?"
+        android:textColor="#FFDD2D"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
         android:id="@+id/greetingTitleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Ezya"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="40sp"
+        android:textSize="48sp"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginHorizontal="32dp"
@@ -21,13 +35,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.42" />
 
     <TextView
         android:id="@+id/greetingSubtitleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Контроль финансов"
+        android:text="Калькулятор финансов"
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="16sp"
         android:gravity="center"
@@ -45,15 +59,16 @@
         android:text="Начать"
         android:textColor="#0A0A0A"
         android:textStyle="bold"
-        android:layout_marginHorizontal="32dp"
+        android:textSize="16sp"
         android:layout_marginTop="32dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginHorizontal="32dp"
         app:backgroundTint="#FFDD2D"
         app:cornerRadius="16dp"
         app:elevation="0dp"
         app:layout_constraintTop_toBottomOf="@id/greetingSubtitleTextView"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
